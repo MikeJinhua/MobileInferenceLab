@@ -1,10 +1,8 @@
 """Export and execute the official-style minimal Add model with ExecuTorch."""
 
 import argparse
-import importlib.resources
 from importlib.metadata import version
 import json
-import os
 from pathlib import Path
 from typing import Dict
 
@@ -13,26 +11,14 @@ from executorch.backends.xnnpack.partition.xnnpack_partitioner import XnnpackPar
 from executorch.exir import to_edge_transform_and_lower
 from executorch.runtime import Runtime
 
+from tools.executorch_utils import configure_bundled_flatc
+
 
 class Add(torch.nn.Module):
     """Minimal model used only to validate the ExecuTorch toolchain."""
 
     def forward(self, left: torch.Tensor, right: torch.Tensor) -> torch.Tensor:
         return left + right
-
-
-def configure_bundled_flatc() -> Path:
-    """Point ExecuTorch 1.3's Windows serializer at its bundled flatc.exe."""
-    configured = os.getenv("FLATC_EXECUTABLE")
-    if configured:
-        return Path(configured)
-
-    resource = importlib.resources.files("executorch.data.bin").joinpath("flatc.exe")
-    if not resource.is_file():
-        raise FileNotFoundError("ExecuTorch wheel does not contain executorch/data/bin/flatc.exe")
-    flatc = Path(str(resource))
-    os.environ["FLATC_EXECUTABLE"] = str(flatc)
-    return flatc
 
 
 def export_and_run(output: Path) -> Dict[str, object]:

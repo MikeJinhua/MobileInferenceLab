@@ -66,8 +66,8 @@ Phase 2.2 completed this installation. The prebuilt wheel path did not require c
 Phase 2 must pass these gates in order:
 
 1. **Environment smoke test:** import `torch` and `executorch`; record exact versions; export the official minimal Add example.
-2. **PyTorch export:** export the tensor-only `SpatialSR2x.network` with a fixed input and compare eager/exported outputs.
-3. **Portable `.pte`:** lower and serialize; run through the Python ExecuTorch runtime if included by the selected Windows wheel; compare outputs.
+2. **PyTorch export:** complete — fixed `SpatialSR2x.network` eager/export parity passed.
+3. **Portable `.pte`:** complete — portable runtime shape/dtype/parity passed; see `SPATIAL_SR_PORTABLE_EXPORT.md`.
 4. **XNNPACK `.pte`:** lower with `XnnpackPartitioner`, inspect delegated versus fallback partitions, and compare outputs.
 5. **Shape policy:** keep static 64x64 first; add bounded dynamic H/W only after static correctness.
 6. **Operator decision:** retain PixelShuffle unless actual export or partition evidence shows failure. Do not redesign based on speculation.

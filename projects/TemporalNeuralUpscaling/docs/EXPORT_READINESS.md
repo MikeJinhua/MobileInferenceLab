@@ -41,7 +41,7 @@ Observed traces accept the tested batch and spatial-size variations. This does n
 
 ## Deployment Risks to Verify
 
-1. `aten::pixel_shuffle` support, decomposition, and QNN delegation are unverified and are the primary operator risk.
+1. PixelShuffle is now verified on ExecuTorch 1.3.1 portable kernels for the static 64x64 artifact; XNNPACK/QNN support, decomposition, and delegation remain unverified and are the primary backend risk.
 2. `aten::_convolution` is expected to lower differently in modern export; backend support must be checked on the actual exported graph.
 3. Python validation is not preserved in the trace and must remain at the host/runtime boundary.
 4. Only float32 CPU execution is validated. FP16/INT8 and device execution remain later phases.
@@ -49,4 +49,4 @@ Observed traces accept the tested batch and spatial-size variations. This does n
 
 ## Phase 2 Gate
 
-Before ExecuTorch work, select a mutually supported PyTorch/ExecuTorch version pair, recreate the environment, export with the supported public API, compare outputs, inspect unsupported/delegated partitions, and revisit PixelShuffle only if evidence shows a compatibility or performance problem.
+The selected PyTorch 2.12.0/ExecuTorch 1.3.1 environment and static portable export now pass. Next inspect XNNPACK delegated/fallback partitions, then evaluate bounded dynamic shapes. Revisit PixelShuffle only if backend evidence shows a compatibility or performance problem.

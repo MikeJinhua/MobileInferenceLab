@@ -132,10 +132,33 @@ Verification:
 
 Limitations: this validates only a minimal Add graph. The Windows wheel needs `FLATC_EXECUTABLE` pointed at its bundled `flatc.exe`; upstream deprecation/CPU-probe warnings remain visible. No SR model, Android, QNN, Vulkan, or dynamic-shape work was performed.
 
+## P2.3 — Static portable SpatialSR2x export
+
+Status: **complete (2026-08-15)**
+
+- [x] Export `SpatialSR2x.network` with static float32 `[1,3,64,64]` input.
+- [x] Lower without a delegate and serialize a portable `.pte`.
+- [x] Load and execute `forward` with the packaged Python runtime.
+- [x] Verify float32 `[1,3,128,128]` output and numerical parity.
+- [x] Record the `torch.export` operator inventory and artifact size.
+- [x] Add a conditional automated test; perform no XNNPACK model analysis or dynamic export.
+
+Changed files: `tools/executorch_utils.py`, `tools/smoke_executorch.py`, `tools/export_spatial_sr_portable.py`, `tests/test_spatial_sr_executorch.py`, `docs/SPATIAL_SR_PORTABLE_EXPORT.md`, `docs/EXPORT_READINESS.md`, `docs/EXECUTORCH_TOOLCHAIN.md`, `README.md`, `docs/SPEC.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `.venv-executorch\Scripts\python.exe -m tools.export_spatial_sr_portable` — PASS.
+- Portable `.pte`: 12,720 bytes; input `[1,3,64,64]`; output `[1,3,128,128]`; float32.
+- Operators: `aten.conv2d.default` x2, `aten.relu.default` x1, `aten.pixel_shuffle.default` x1.
+- Eager/export max difference 0; eager/runtime max difference `2.086162567138672e-7`; mean difference `2.5059028629925706e-8`.
+- ExecuTorch environment tests: PASS, 15/15.
+- Phase 1 environment tests: PASS, 13 tests plus 2 expected ExecuTorch-only skips.
+
+Limitations: the artifact is static-shape and portable-only. XNNPACK/QNN delegation, fallback, dynamic shapes, Android execution, image quality, and mobile performance remain unverified.
+
 ## Remaining Work
 
-- [ ] Phase 2.3: export static-shape `SpatialSR2x` to portable `.pte` and verify parity (**next**).
-- [ ] Phase 2.4: lower to XNNPACK and inspect delegation/fallback.
+- [ ] Phase 2.4: lower `SpatialSR2x` to XNNPACK and inspect delegation/fallback (**next**).
 - [ ] Phase 2.5: evaluate bounded dynamic shapes.
 - [ ] Phase 3 Android CPU.
 - [ ] Phase 4 QNN/NPU.

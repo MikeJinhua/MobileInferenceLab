@@ -78,3 +78,12 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Load the `.pte` with the packaged Python runtime and verify exact eager/export/runtime parity.
 - Record artifact size and environment versions, but do not commit generated `.pte` files.
 - Do not export the project SR model or start Android/QNN in this task.
+
+### Phase 2 Task 3 — Static Portable SpatialSR2x Export
+
+- Export the tensor-only `SpatialSR2x.network` with fixed float32 NCHW input `[1,3,64,64]`.
+- Lower without a backend partitioner to validate ExecuTorch portable kernels.
+- Serialize an ignored `.pte`, load it with the Python runtime, and execute `forward`.
+- Require output `[1,3,128,128]`, float32 dtype, and eager/export/runtime numerical parity within documented tolerances.
+- Record the `torch.export` operator inventory and artifact size.
+- Do not evaluate XNNPACK delegation/fallback or dynamic shapes in this task.
