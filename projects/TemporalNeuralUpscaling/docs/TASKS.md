@@ -22,7 +22,7 @@ Verification:
 - CPU/PyTorch 2.0.0+cpu result: output `(1, 3, 128, 128)` from `(1, 3, 64, 64)`; mean 0.646 ms, median 0.634 ms, minimum 0.549 ms, 1548.31 inferences/s.
 - Result is a short inference-only smoke benchmark, not a stable performance claim.
 
-Limitations: random weights do not establish visual quality; PC CPU timing excludes end-to-end costs; PixelShuffle backend support remains unverified; missing NumPy produces a non-fatal PyTorch warning.
+Limitations: random weights do not establish visual quality; PC CPU timing excludes end-to-end costs; PixelShuffle backend support remains unverified. The original missing-NumPy warning was resolved in the project `.venv` during P1.2.
 
 ## P1.2 — Deterministic image inference and saved comparison
 
@@ -46,10 +46,30 @@ Verification:
 
 Limitations: neural output uses deterministic random weights solely to validate the end-to-end image path; it is not an SR quality result. Generated `results/` files remain local and ignored by Git.
 
+## P1.3 — Export readiness and operator inventory
+
+Status: **complete (2026-08-15)**
+
+- [x] Detect available PyTorch export/graph-capture capabilities.
+- [x] Trace the tensor-only inference core for a local ATen inventory.
+- [x] Verify eager/trace shape and numerical parity across representative shapes.
+- [x] Record layout, dtype, dynamic-shape limits, operator risks, and the Phase 2 gate.
+- [x] Avoid producing or claiming an ExecuTorch/mobile artifact.
+
+Changed files: `analysis/__init__.py`, `analysis/export_readiness.py`, `tools/inspect_export_readiness.py`, `tests/test_export_readiness.py`, `docs/EXPORT_READINESS.md`, `README.md`, `docs/SPEC.md`, `docs/PLAN.md`, `docs/ENVIRONMENT.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `.venv\Scripts\python.exe -m tools.inspect_export_readiness --output docs\EXPORT_READINESS.md` — PASS.
+- `.venv\Scripts\python.exe -m unittest discover -s tests -v` — PASS, 11/11 tests.
+- Inventory: `aten::_convolution` x2, `aten::relu` x1, `aten::pixel_shuffle` x1.
+- Eager/trace maximum absolute difference: 0 for `(1,3,16,24)`, `(1,3,17,21)`, and `(2,3,32,40)` inputs.
+
+Limitations: installed PyTorch 2.0.0 has no public `torch.export`; TorchScript is only a preflight. Dynamic shapes are observed, not formally declared. ExecuTorch support and QNN delegation—especially PixelShuffle—remain unverified.
+
 ## Remaining Work
 
-- [ ] P1.3 export readiness/operator inventory (**next**).
-- [ ] P1.4 PC baseline report.
+- [ ] P1.4 PC baseline report (**next**).
 - [ ] Phase 2 ExecuTorch.
 - [ ] Phase 3 Android CPU.
 - [ ] Phase 4 QNN/NPU.

@@ -33,3 +33,7 @@ Detected on 2026-08-15 from Windows/VS Code workspace `F:\mobile_ai`. No package
 The repository-local `.venv` was created with `--system-site-packages` to reuse the existing CPU PyTorch, then NumPy and Pillow were installed inside it. Recreate dependencies from `requirements-phase1.txt`; choose exact PyTorch/ExecuTorch pins before export work because the current PyTorch 2.0.0 is old and compatibility is version-sensitive.
 
 Large SDKs (Android Studio/SDK/NDK, ExecuTorch dependencies, QAIRT/QNN, Vulkan SDK) remain manual, phase-gated installations.
+
+## Export Readiness Note
+
+PyTorch 2.0.0 does not expose the public `torch.export` API used by current ExecuTorch workflows. P1.3 uses TorchScript tracing only for a local operator/parity preflight. Phase 2 requires selecting and installing a mutually compatible PyTorch/ExecuTorch version pair in an isolated environment before producing any ExecuTorch artifact.

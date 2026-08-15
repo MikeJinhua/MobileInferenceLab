@@ -44,3 +44,11 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Test RGB conversion, shapes, deterministic output, and lossless PNG save/load.
 - Provide a CLI for synthetic or user-supplied input.
 - Make no claim about the image quality of the untrained model.
+
+### Phase 1 Task 3
+
+- Produce a reproducible local inference graph and ATen operator inventory without starting ExecuTorch integration.
+- Compare traced and eager output across representative batch and spatial shapes.
+- Record dtype/layout and static/dynamic shape assumptions.
+- Identify PixelShuffle, convolution lowering, and host-side validation as deployment checks.
+- Clearly distinguish a TorchScript preflight from a supported `torch.export`/ExecuTorch artifact.

@@ -11,6 +11,10 @@ Advance one verified task at a time. Prefer a small operator set and explicit te
 
 Initial model: `Conv2d -> ReLU -> Conv2d -> PixelShuffle(2)`, using float32 NCHW RGB. This is compact and avoids exotic operators. PixelShuffle avoids learned transposed convolution, but ExecuTorch/QNN support and performance must be verified in Phases 2/4. If it is unsupported or poorly delegated, document and compare a resize-plus-convolution alternative before changing the model.
 
+### P1.3 export-readiness method
+
+The detected PyTorch 2.0.0 environment predates the public `torch.export` API expected by current ExecuTorch workflows. P1.3 therefore uses a frozen TorchScript trace only as a local ATen operator inventory and shape/parity preflight; it does not create or claim an ExecuTorch-compatible artifact. The trace targets `SpatialSR2x.network`, the tensor-only inference core. Python input validation remains a host-side contract because trace cannot preserve its data-dependent Python guards. Phase 2 must select compatible PyTorch/ExecuTorch versions, use the supported export API, and revalidate operators, dynamic shapes, and delegation.
+
 ## Later Phases
 
 - **Phase 2:** pin compatible PyTorch/ExecuTorch versions, export, inspect graph/unsupported operators, compare outputs.
