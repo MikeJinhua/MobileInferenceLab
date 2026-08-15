@@ -25,7 +25,7 @@ Detected on 2026-08-15 from Windows/VS Code workspace `F:\mobile_ai`. No package
 | Android NDK | `ANDROID_NDK_HOME` not set | Install a compatible NDK before native Android work |
 | Ninja | Not on PATH | Install with Android/native toolchain when required |
 | Vulkan SDK | `VULKAN_SDK` not set | Defer until Phase 6; Android device Vulkan support also needs target validation |
-| ExecuTorch | Not checked/installed | Pin with a compatible PyTorch version in Phase 2 |
+| ExecuTorch | 1.3.1 in `.venv-executorch` | Minimal XNNPACK export/runtime smoke test passed |
 | Qualcomm QAIRT/QNN | Not checked/installed | Obtain licensed SDK after selecting supported Snapdragon hardware |
 
 ## Recommended Phase 1 Isolation
@@ -40,4 +40,4 @@ PyTorch 2.0.0 does not expose the public `torch.export` API used by current Exec
 
 ## Phase 2.1 Decision
 
-The selected initial export baseline is Python 3.10 + PyTorch 2.12.0 + ExecuTorch 1.3.1 in `.venv-executorch`. No packages were installed by Phase 2.1. Visual Studio 2022 Enterprise/MSVC is present, but the current shell is not a Developer PowerShell and the Clang component was not detected. WSL Ubuntu 22.04 is not available and remains a manual prerequisite for the later QNN phase. See `EXECUTORCH_TOOLCHAIN.md`.
+The selected export baseline is installed in `.venv-executorch`: Python 3.10.6, PyTorch 2.12.0+cpu, ExecuTorch 1.3.1, NumPy 2.2.6, and Pillow 11.3.0. `pip check` and the minimal XNNPACK `.pte` runtime test pass. Visual Studio 2022 Enterprise/MSVC is present, but the current shell is not a Developer PowerShell and the Clang component was not detected. WSL Ubuntu 22.04 is not available and remains a manual prerequisite for the later QNN phase. See `EXECUTORCH_TOOLCHAIN.md` and `EXECUTORCH_SMOKE.md`.

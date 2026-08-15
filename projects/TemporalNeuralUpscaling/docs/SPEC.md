@@ -69,3 +69,12 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Define portable, XNNPACK, dynamic-shape, operator-partition, and numerical-parity validation gates.
 - Record native Windows prerequisites and the separate verified WSL/Linux path needed for future QNN work.
 - Do not install ExecuTorch, build Android artifacts, or begin QNN integration in this planning task.
+
+### Phase 2 Task 2 — Environment and Smoke Export
+
+- Create an ignored `.venv-executorch` independent from Phase 1.
+- Install the selected pinned versions and pass `pip check`.
+- Export a minimal Add model through `torch.export`, XNNPACK lowering, and `.pte` serialization.
+- Load the `.pte` with the packaged Python runtime and verify exact eager/export/runtime parity.
+- Record artifact size and environment versions, but do not commit generated `.pte` files.
+- Do not export the project SR model or start Android/QNN in this task.

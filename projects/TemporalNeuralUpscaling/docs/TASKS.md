@@ -110,10 +110,31 @@ Verification:
 
 Limitations: the toolchain is selected but not installed or smoke-tested. ExecuTorch 1.4.1 was released one day before this decision but is not yet the official documented stable line; revisit only through a deliberate upgrade task.
 
+## P2.2 — Install toolchain and run minimal export
+
+Status: **complete (2026-08-15)**
+
+- [x] Create ignored `.venv-executorch` without reusing Phase 1 packages.
+- [x] Install PyTorch 2.12.0+cpu and ExecuTorch 1.3.1; pass `pip check`.
+- [x] Export the minimal Add model with `torch.export` and XNNPACK.
+- [x] Serialize a 1,584-byte `.pte`, load it in the packaged runtime, and execute `forward`.
+- [x] Verify eager/export/runtime result parity with maximum absolute difference 0.
+- [x] Add a conditional automated smoke test and document the Windows bundled-`flatc.exe` workaround.
+
+Changed files: `tools/smoke_executorch.py`, `tests/test_executorch_smoke.py`, `docs/EXECUTORCH_SMOKE.md`, `README.md`, `docs/SPEC.md`, `docs/ENVIRONMENT.md`, `docs/EXECUTORCH_TOOLCHAIN.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `.venv-executorch\Scripts\python.exe -m pip check` — PASS.
+- `.venv-executorch\Scripts\python.exe -m tools.smoke_executorch` — PASS; XNNPACK `.pte` size 1,584 bytes; output 4.0; parity differences 0.
+- `.venv-executorch\Scripts\python.exe -m unittest discover -s tests -v` — PASS, 14/14 tests.
+- `.venv\Scripts\python.exe -m unittest discover -s tests -v` — PASS, 13 tests plus the expected ExecuTorch-only skip.
+
+Limitations: this validates only a minimal Add graph. The Windows wheel needs `FLATC_EXECUTABLE` pointed at its bundled `flatc.exe`; upstream deprecation/CPU-probe warnings remain visible. No SR model, Android, QNN, Vulkan, or dynamic-shape work was performed.
+
 ## Remaining Work
 
-- [ ] Phase 2.2: create `.venv-executorch`, install pins, and run the official minimal Add export (**next**).
-- [ ] Phase 2.3: export static-shape `SpatialSR2x` to portable `.pte` and verify parity.
+- [ ] Phase 2.3: export static-shape `SpatialSR2x` to portable `.pte` and verify parity (**next**).
 - [ ] Phase 2.4: lower to XNNPACK and inspect delegation/fallback.
 - [ ] Phase 2.5: evaluate bounded dynamic shapes.
 - [ ] Phase 3 Android CPU.

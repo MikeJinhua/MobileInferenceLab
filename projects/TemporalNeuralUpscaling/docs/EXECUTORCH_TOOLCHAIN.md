@@ -49,6 +49,8 @@ python -m venv .venv-executorch
 
 Run native build-dependent commands from Visual Studio Developer PowerShell. Do not install these packages into the system Python or the Phase 1 `.venv`.
 
+Phase 2.2 completed this installation. The prebuilt wheel path did not require compiling ExecuTorch from source. See `EXECUTORCH_SMOKE.md` for the validation result and Windows `flatc.exe` resolution finding.
+
 ## Detected Host Readiness
 
 - Visual Studio 2022 Enterprise with MSVC x64 tools: detected.
