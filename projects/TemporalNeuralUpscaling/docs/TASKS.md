@@ -156,10 +156,32 @@ Verification:
 
 Limitations: the artifact is static-shape and portable-only. XNNPACK/QNN delegation, fallback, dynamic shapes, Android execution, image quality, and mobile performance remain unverified.
 
+## P2.4 — Static XNNPACK delegation and fallback analysis
+
+Status: **complete (2026-08-15)**
+
+- [x] Lower static `SpatialSR2x.network` with `XnnpackPartitioner`.
+- [x] Inspect the post-partition graph and backend identity.
+- [x] Verify one `XnnpackBackend` delegate and zero portable fallback operators.
+- [x] Serialize and execute the XNNPACK `.pte` with eager/runtime parity.
+- [x] Add a conditional automated delegation/runtime test.
+
+Changed files: `tools/export_spatial_sr_xnnpack.py`, `tests/test_spatial_sr_xnnpack.py`, `docs/SPATIAL_SR_XNNPACK_EXPORT.md`, `docs/EXPORT_READINESS.md`, `README.md`, `docs/SPEC.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `.venv-executorch\Scripts\python.exe -m tools.export_spatial_sr_xnnpack` — PASS.
+- XNNPACK `.pte`: 12,592 bytes; one `XnnpackBackend` delegate; no portable fallback operators.
+- Input `[1,3,64,64]`; output `[1,3,128,128]`; float32.
+- Eager/export max difference 0; eager/runtime max difference `2.980232238769531e-7`; mean difference `2.542216748224746e-8`.
+- ExecuTorch environment tests: PASS, 16/16.
+- Phase 1 environment tests: PASS, 13 tests plus 3 expected ExecuTorch-only skips.
+
+Limitations: the claim applies only to the static PC artifact and ExecuTorch 1.3.1. Dynamic shapes, Android execution/performance, QNN delegation, quantization, and image quality remain unverified.
+
 ## Remaining Work
 
-- [ ] Phase 2.4: lower `SpatialSR2x` to XNNPACK and inspect delegation/fallback (**next**).
-- [ ] Phase 2.5: evaluate bounded dynamic shapes.
+- [ ] Phase 2.5: evaluate bounded dynamic shapes (**next**).
 - [ ] Phase 3 Android CPU.
 - [ ] Phase 4 QNN/NPU.
 - [ ] Phase 5 quantization.

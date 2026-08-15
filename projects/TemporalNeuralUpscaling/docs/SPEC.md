@@ -87,3 +87,11 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Require output `[1,3,128,128]`, float32 dtype, and eager/export/runtime numerical parity within documented tolerances.
 - Record the `torch.export` operator inventory and artifact size.
 - Do not evaluate XNNPACK delegation/fallback or dynamic shapes in this task.
+
+### Phase 2 Task 4 — Static XNNPACK Delegation Analysis
+
+- Lower fixed float32 `[1,3,64,64]` `SpatialSR2x.network` with `XnnpackPartitioner`.
+- Inspect the post-partition graph and record delegate count, backend identity, and residual portable operators.
+- Require one XNNPACK delegate and no portable operator fallback for the observed artifact.
+- Serialize and execute the ignored `.pte`; require float32 `[1,3,128,128]` output and eager/runtime parity within `1e-5`.
+- Scope the delegation claim to the exact static artifact and toolchain; do not infer QNN or dynamic-shape support.
