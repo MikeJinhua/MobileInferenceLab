@@ -2,7 +2,7 @@
 
 A staged on-device AI engineering project that builds a real-time 2x neural-upscaling pipeline for Android and studies its complete CPU/GPU/NPU cost.
 
-> Status: Phase 1 PC baseline complete. ExecuTorch, Android, QNN, Vulkan, and temporal reconstruction are planned but not implemented.
+> Status: Phase 1 complete; Phase 2.1 ExecuTorch toolchain selected. No `.pte`, Android, QNN, Vulkan, or temporal implementation yet.
 
 ## Current Pipeline
 
@@ -54,6 +54,6 @@ docs/        specification, plan, and task ledger
 7. Temporal reconstruction with history, motion vectors, and depth.
 8. Comparative demo and end-to-end benchmark.
 
-See [SPEC](docs/SPEC.md), [PLAN](docs/PLAN.md), [TASKS](docs/TASKS.md), the [PC baseline](docs/PC_BASELINE.md), the [export-readiness report](docs/EXPORT_READINESS.md), and the [environment report](docs/ENVIRONMENT.md). Architecture diagrams, demo media, deployment findings, profiling, optimization history, and CPU/GPU/NPU comparisons will be added when verified evidence exists.
+See [SPEC](docs/SPEC.md), [PLAN](docs/PLAN.md), [TASKS](docs/TASKS.md), the [ExecuTorch toolchain decision](docs/EXECUTORCH_TOOLCHAIN.md), the [PC baseline](docs/PC_BASELINE.md), the [export-readiness report](docs/EXPORT_READINESS.md), and the [environment report](docs/ENVIRONMENT.md). Architecture diagrams, demo media, deployment findings, profiling, optimization history, and CPU/GPU/NPU comparisons will be added when verified evidence exists.
 
 Phase 1 needs Python, PyTorch, and the NumPy dependency expected by PyTorch. Later phases need separately installed Android/JDK/SDK/NDK, ExecuTorch, Qualcomm QAIRT/QNN, Ninja, and Vulkan tooling. No proprietary SDK is vendored.

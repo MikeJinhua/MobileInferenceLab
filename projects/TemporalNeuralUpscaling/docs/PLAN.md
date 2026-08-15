@@ -21,7 +21,7 @@ Measure a deterministic synthetic RGB source at 64x64, 320x180, and 960x540 on C
 
 ## Later Phases
 
-- **Phase 2:** pin compatible PyTorch/ExecuTorch versions, export, inspect graph/unsupported operators, compare outputs.
+- **Phase 2:** use the documented `ExecuTorch 1.3.1 + PyTorch 2.12.0 + Python 3.10` baseline in a separate environment. First verify the official minimal export, then export `SpatialSR2x.network` with static 64x64 input, create portable and XNNPACK `.pte` files, inspect partitions/fallback, compare outputs, and only then evaluate bounded dynamic shapes. See `docs/EXECUTORCH_TOOLCHAIN.md` for the dated decision and upgrade policy.
 - **Phase 3:** minimal Android UI plus native C++ model/tensor path and CPU metrics.
 - **Phase 4:** document licensed QAIRT/QNN setup, verify delegation/fallback, measure initialization/load/inference/memory.
 - **Phase 5:** comparable FP32/FP16/INT8 artifacts and results.
@@ -35,6 +35,8 @@ Planned Android native layout: `app/` for UI/lifecycle; `native/renderer/`, `inf
 
 - Now: Git, Python 3.10+, PyTorch 2.0+, and NumPy as a normal PyTorch dependency; standard-library `unittest` avoids adding pytest.
 - Phase 1 Task 2: optionally Pillow in a project virtual environment for image I/O.
-- Later only when needed: matched ExecuTorch/PyTorch; Android Studio, supported JDK/SDK/NDK, CMake, Ninja/platform tools; licensed QAIRT/QNN for the target; Vulkan tooling.
+- Phase 2 portable/XNNPACK: separate `.venv-executorch` with Python 3.10, PyTorch 2.12.0, and ExecuTorch 1.3.1. Use native Windows for the initial pip/export path.
+- Phase 4 QNN: WSL Ubuntu 22.04, compatible compiler/NDK, supported Snapdragon device, and licensed QAIRT/QNN SDK. Do not assume the native Windows export environment is the QNN build environment.
+- Later only when needed: Android Studio, supported JDK/SDK/NDK, compatible CMake/Ninja/platform tools, QAIRT/QNN, and Vulkan tooling.
 
 Do not silently install system-level or large dependencies. Select exact versions after choosing the target device and consulting compatibility requirements.

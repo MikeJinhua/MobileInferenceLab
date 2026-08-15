@@ -37,3 +37,7 @@ Large SDKs (Android Studio/SDK/NDK, ExecuTorch dependencies, QAIRT/QNN, Vulkan S
 ## Export Readiness Note
 
 PyTorch 2.0.0 does not expose the public `torch.export` API used by current ExecuTorch workflows. P1.3 uses TorchScript tracing only for a local operator/parity preflight. Phase 2 requires selecting and installing a mutually compatible PyTorch/ExecuTorch version pair in an isolated environment before producing any ExecuTorch artifact.
+
+## Phase 2.1 Decision
+
+The selected initial export baseline is Python 3.10 + PyTorch 2.12.0 + ExecuTorch 1.3.1 in `.venv-executorch`. No packages were installed by Phase 2.1. Visual Studio 2022 Enterprise/MSVC is present, but the current shell is not a Developer PowerShell and the Clang component was not detected. WSL Ubuntu 22.04 is not available and remains a manual prerequisite for the later QNN phase. See `EXECUTORCH_TOOLCHAIN.md`.

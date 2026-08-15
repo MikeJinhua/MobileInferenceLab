@@ -2,7 +2,7 @@
 
 Updated: 2026-08-15
 
-Active phase: **Phase 1 — Spatial Neural SR complete; Phase 2 not started**
+Active phase: **Phase 2 — ExecuTorch preparation**
 
 ## P1.1 — Minimal 2x tensor model and microbenchmark
 
@@ -88,9 +88,34 @@ Verification:
 
 Limitations: local eager PyTorch CPU result on an untrained model; PNG I/O, display, transfer, synchronization, sustained load, thermal, power, and mobile execution are excluded. Twenty samples per stage form a development baseline, not a publication-grade performance study.
 
+## P2.1 — Select the ExecuTorch toolchain
+
+Status: **complete (2026-08-15)**
+
+- [x] Review official installation, export, Windows, Android, and Qualcomm guidance.
+- [x] Select Python 3.10 + PyTorch 2.12.0 + ExecuTorch 1.3.1.
+- [x] Define separate `.venv-executorch` and preserve the Phase 1 environment.
+- [x] Define portable, XNNPACK, parity, partition/fallback, and static-before-dynamic gates.
+- [x] Record native Windows readiness and defer WSL/QNN setup.
+- [x] Install no packages or SDKs during this planning task.
+
+Changed files: `.gitignore`, `requirements-executorch.txt`, `docs/EXECUTORCH_TOOLCHAIN.md`, `README.md`, `docs/SPEC.md`, `docs/PLAN.md`, `docs/ENVIRONMENT.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- Official stable documentation line checked: ExecuTorch 1.3.
+- Release metadata checked: release/1.3 requires PyTorch 2.12-era tooling; selected stable PyTorch 2.12.0 and ExecuTorch patch 1.3.1.
+- Host inspection: Visual Studio 2022 Enterprise/MSVC detected; Developer PowerShell available; Clang component not detected; WSL Ubuntu 22.04 not available.
+- Existing Phase 1 test suite remains the regression gate; this task changes no runtime code.
+
+Limitations: the toolchain is selected but not installed or smoke-tested. ExecuTorch 1.4.1 was released one day before this decision but is not yet the official documented stable line; revisit only through a deliberate upgrade task.
+
 ## Remaining Work
 
-- [ ] Phase 2.1: select and document a compatible PyTorch/ExecuTorch toolchain (**next**).
+- [ ] Phase 2.2: create `.venv-executorch`, install pins, and run the official minimal Add export (**next**).
+- [ ] Phase 2.3: export static-shape `SpatialSR2x` to portable `.pte` and verify parity.
+- [ ] Phase 2.4: lower to XNNPACK and inspect delegation/fallback.
+- [ ] Phase 2.5: evaluate bounded dynamic shapes.
 - [ ] Phase 3 Android CPU.
 - [ ] Phase 4 QNN/NPU.
 - [ ] Phase 5 quantization.

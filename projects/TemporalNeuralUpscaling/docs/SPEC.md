@@ -61,3 +61,11 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Report mean, median, P90, P95, minimum, and maximum in machine-readable JSON and Markdown.
 - Exclude and disclose PNG I/O, mobile/device transfer, display, thermal, and power costs.
 - Treat results as an engineering baseline for an untrained model, never as an SR quality claim.
+
+### Phase 2 Task 1 — Toolchain Selection
+
+- Select and date a mutually compatible Python, PyTorch, and ExecuTorch release set using official sources.
+- Keep Phase 1 and ExecuTorch dependencies in separate virtual environments.
+- Define portable, XNNPACK, dynamic-shape, operator-partition, and numerical-parity validation gates.
+- Record native Windows prerequisites and the separate verified WSL/Linux path needed for future QNN work.
+- Do not install ExecuTorch, build Android artifacts, or begin QNN integration in this planning task.
