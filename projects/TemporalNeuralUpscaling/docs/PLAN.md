@@ -21,7 +21,7 @@ Measure a deterministic synthetic RGB source at 64x64, 320x180, and 960x540 on C
 
 ## Later Phases
 
-- **Phase 2:** use the documented `ExecuTorch 1.3.1 + PyTorch 2.12.0 + Python 3.10` baseline in a separate environment. First verify the official minimal export, then export `SpatialSR2x.network` with static 64x64 input, create portable and XNNPACK `.pte` files, inspect partitions/fallback, compare outputs, and only then evaluate bounded dynamic shapes. See `docs/EXECUTORCH_TOOLCHAIN.md` for the dated decision and upgrade policy.
+- **Phase 2 (complete):** the documented `ExecuTorch 1.3.1 + PyTorch 2.12.0 + Python 3.10` environment passes minimal, static portable, static XNNPACK, and bounded-dynamic portable/XNNPACK export and runtime parity. The dynamic contract fixes batch/RGB/float32 and bounds height/width to `16..128`; its XNNPACK graph has three delegates and two portable reshape fallbacks. See the Phase 2 reports for exact evidence.
 - **Phase 3:** minimal Android UI plus native C++ model/tensor path and CPU metrics.
 - **Phase 4:** document licensed QAIRT/QNN setup, verify delegation/fallback, measure initialization/load/inference/memory.
 - **Phase 5:** comparable FP32/FP16/INT8 artifacts and results.

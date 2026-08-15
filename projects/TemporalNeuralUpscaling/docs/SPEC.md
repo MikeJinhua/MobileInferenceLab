@@ -95,3 +95,12 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Require one XNNPACK delegate and no portable operator fallback for the observed artifact.
 - Serialize and execute the ignored `.pte`; require float32 `[1,3,128,128]` output and eager/runtime parity within `1e-5`.
 - Scope the delegation claim to the exact static artifact and toolchain; do not infer QNN or dynamic-shape support.
+
+### Phase 2 Task 5 — Bounded Dynamic Shapes
+
+- Fix batch to 1, channels to 3, dtype to float32, and bound height/width independently to `16..128`.
+- Export portable and XNNPACK `.pte` files from one `[1,3,64,64]` example.
+- Execute lower-bound, upper-bound, odd, square, and non-square shapes and require exact 2x output shape.
+- Require eager/runtime numerical parity within `1e-5` on both backends.
+- Record XNNPACK delegate/fallback topology and representative out-of-range rejection.
+- Treat mobile performance and the fixed-versus-dynamic deployment choice as Phase 3 measurements.

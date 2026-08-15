@@ -49,4 +49,4 @@ Observed traces accept the tested batch and spatial-size variations. This does n
 
 ## Phase 2 Gate
 
-The selected PyTorch 2.12.0/ExecuTorch 1.3.1 environment, static portable export, and static fully delegated XNNPACK export now pass. Next evaluate bounded dynamic shapes. Revisit PixelShuffle only if later backend evidence shows a compatibility or performance problem.
+The selected PyTorch 2.12.0/ExecuTorch 1.3.1 environment passes static and bounded-dynamic portable/XNNPACK artifacts. The bounded `16..128` dynamic graph executes correctly but splits XNNPACK into three delegates with two portable `view_copy` fallbacks. Phase 3 must measure fixed versus dynamic artifacts on Android before selecting the application deployment contract.

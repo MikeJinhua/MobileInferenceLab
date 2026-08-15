@@ -2,7 +2,7 @@
 
 Updated: 2026-08-15
 
-Active phase: **Phase 2 — ExecuTorch preparation**
+Active phase: **Phase 3 — Android CPU (next)**
 
 ## P1.1 — Minimal 2x tensor model and microbenchmark
 
@@ -179,10 +179,36 @@ Verification:
 
 Limitations: the claim applies only to the static PC artifact and ExecuTorch 1.3.1. Dynamic shapes, Android execution/performance, QNN delegation, quantization, and image quality remain unverified.
 
+## P2.5 — Bounded dynamic shapes
+
+Status: **complete (2026-08-15)**
+
+- [x] Declare batch-1 RGB float32 with independent height/width bounds `16..128`.
+- [x] Export portable and XNNPACK bounded-dynamic `.pte` files.
+- [x] Execute boundary, odd, square, and non-square inputs with correct 2x outputs.
+- [x] Verify eager/runtime parity and representative out-of-range export rejection.
+- [x] Record dynamic XNNPACK delegate and portable fallback topology.
+
+Changed files: `tools/export_spatial_sr_dynamic.py`, `tests/test_spatial_sr_dynamic.py`, `docs/SPATIAL_SR_DYNAMIC_EXPORT.md`, `docs/EXPORT_READINESS.md`, `README.md`, `docs/SPEC.md`, `docs/PLAN.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `.venv-executorch\Scripts\python.exe -m tools.export_spatial_sr_dynamic` — PASS.
+- Five shapes from `[1,3,16,16]` through `[1,3,128,128]` pass portable and XNNPACK runtime parity.
+- Portable `.pte`: 13,616 bytes; maximum eager/runtime difference `2.682209014892578e-7`.
+- XNNPACK `.pte`: 14,640 bytes; maximum eager/runtime difference `2.8312206268310547e-7`.
+- Dynamic XNNPACK graph: three delegates, two portable `view_copy` fallbacks, and symbolic shape arithmetic.
+- Export contract rejects representative below-minimum and above-maximum shapes.
+- ExecuTorch environment tests: PASS, 17/17.
+- Phase 1 environment tests: PASS, 13 tests plus 4 expected ExecuTorch-only skips.
+
+Limitations: the contract supports only batch 1, RGB float32, and dimensions `16..128`. Tests run on the packaged PC runtime; Android performance, QNN, quantization, image quality, and arbitrary shapes remain unverified.
+
+Phase 2 outcome: **complete**. Static export offers full single-partition XNNPACK delegation; bounded dynamic export offers verified size flexibility with reshape fallback. Phase 3 must measure both on Android before choosing the app artifact.
+
 ## Remaining Work
 
-- [ ] Phase 2.5: evaluate bounded dynamic shapes (**next**).
-- [ ] Phase 3 Android CPU.
+- [ ] Phase 3 Android CPU (**next**).
 - [ ] Phase 4 QNN/NPU.
 - [ ] Phase 5 quantization.
 - [ ] Phase 6 Vulkan pipeline.
