@@ -13,11 +13,12 @@ Detected on 2026-08-15 from Windows/VS Code workspace `F:\mobile_ai`. No package
 | CMake | 4.3.0 | Available for later native work |
 | ADB | 36.0.0-13206524 | Available at `E:\DeveloperTools\platform-tools\adb.exe` |
 
-## Missing or Not Configured
+## Project-local Dependencies and Missing Components
 
 | Component | Observation | Action |
 | --- | --- | --- |
-| NumPy | Not installed for Python 3.10; PyTorch emits a warning | Install in a project virtual environment before image/tensor interop work |
+| NumPy | 1.26.4 installed in project `.venv` | Ready for Phase 1 image/tensor interop |
+| Pillow | 11.3.0 installed in project `.venv` | Ready for Phase 1 image I/O |
 | pytest | Not installed | Not required; Phase 1 tests use `unittest` |
 | Java/JDK | `java` not on PATH | Install/configure with Android Studio before Phase 3 |
 | Android SDK | `ANDROID_HOME` not set | Select/install and configure before Phase 3 |
@@ -29,6 +30,6 @@ Detected on 2026-08-15 from Windows/VS Code workspace `F:\mobile_ai`. No package
 
 ## Recommended Phase 1 Isolation
 
-Do not modify the system Python implicitly. Before Task P1.2, create a repository-local virtual environment and install a compatible, pinned PyTorch/NumPy set. Exact pins should be chosen before ExecuTorch work because the current PyTorch 2.0.0 is old and ExecuTorch compatibility is version-sensitive.
+The repository-local `.venv` was created with `--system-site-packages` to reuse the existing CPU PyTorch, then NumPy and Pillow were installed inside it. Recreate dependencies from `requirements-phase1.txt`; choose exact PyTorch/ExecuTorch pins before export work because the current PyTorch 2.0.0 is old and compatibility is version-sensitive.
 
 Large SDKs (Android Studio/SDK/NDK, ExecuTorch dependencies, QAIRT/QNN, Vulkan SDK) remain manual, phase-gated installations.

@@ -26,16 +26,29 @@ Limitations: random weights do not establish visual quality; PC CPU timing exclu
 
 ## P1.2 — Deterministic image inference and saved comparison
 
-Status: **next**
+Status: **complete (2026-08-15)**
 
-- [ ] Define licensed/generated sample policy and image dependency.
-- [ ] Load RGB image and convert tensor.
-- [ ] Save input, bilinear 2x, and model output.
-- [ ] Add deterministic tests.
+- [x] Define a project-generated sample policy and NumPy/Pillow dependencies.
+- [x] Convert Pillow RGB image to normalized float32 NCHW tensor and back.
+- [x] Run deterministic untrained-model inference and bilinear baseline.
+- [x] Save RGB input, bilinear 2x, and neural 2x PNG files.
+- [x] Test channels, shapes, determinism, and image save/load.
+- [x] Add a CLI for synthetic and user-supplied images.
+
+Changed files: `requirements-phase1.txt`, `assets/README.md`, `pipeline/__init__.py`, `pipeline/image_pipeline.py`, `tools/__init__.py`, `tools/run_sr_image.py`, `tests/test_image_pipeline.py`, `README.md`, and SDD/environment documents.
+
+Verification:
+
+- `.venv\Scripts\python.exe -m unittest discover -s tests -v` — PASS, 9/9 tests (P1.1 and P1.2).
+- `.venv\Scripts\python.exe -m tools.run_sr_image --synthetic-size 96x64 --output-dir results\p1_2` — PASS.
+- `.venv\Scripts\python.exe -m tools.run_sr_image --input results\p1_2\input.png --output-dir results\p1_2_from_input` — PASS.
+- Generated RGB PNGs: `input.png` at 96x64, `bilinear_2x.png` at 192x128, and `neural_2x.png` at 192x128.
+
+Limitations: neural output uses deterministic random weights solely to validate the end-to-end image path; it is not an SR quality result. Generated `results/` files remain local and ignored by Git.
 
 ## Remaining Work
 
-- [ ] P1.3 export readiness/operator inventory.
+- [ ] P1.3 export readiness/operator inventory (**next**).
 - [ ] P1.4 PC baseline report.
 - [ ] Phase 2 ExecuTorch.
 - [ ] Phase 3 Android CPU.

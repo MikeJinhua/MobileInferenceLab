@@ -23,7 +23,9 @@ Each result identifies hardware, backend/software, precision, shape, warmup, sam
 
 Document prerequisites, commands, versions, devices, limitations, third-party sources, and licenses. Never commit credentials, private/restricted code, proprietary SDK binaries, or large generated models.
 
-## Phase 1 Task 1 Acceptance Criteria
+## Completed Task Acceptance Criteria
+
+### Phase 1 Task 1
 
 - Minimal 2x PyTorch module runs on installed CPU PyTorch.
 - `[N, 3, H, W]` produces `[N, 3, 2H, 2W]`.
@@ -31,3 +33,14 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Standard-library automated tests pass.
 - CLI benchmark warms up and reports mean/median/min latency and throughput.
 - No image I/O, training, Android, QNN, Vulkan, quantization, or temporal implementation.
+
+### Phase 1 Task 2
+
+- Convert any Pillow input to RGB and then to normalized float32 `[1, 3, H, W]`.
+- Run the existing 2x spatial model with deterministic untrained weights.
+- Convert the output tensor to an RGB image.
+- Save the original RGB input, bilinear 2x baseline, and neural 2x output as PNG.
+- Provide a deterministic, project-generated synthetic source with no external license dependency.
+- Test RGB conversion, shapes, deterministic output, and lossless PNG save/load.
+- Provide a CLI for synthetic or user-supplied input.
+- Make no claim about the image quality of the untrained model.
