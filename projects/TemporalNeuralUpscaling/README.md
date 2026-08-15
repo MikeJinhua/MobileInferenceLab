@@ -1,0 +1,54 @@
+# TemporalNeuralUpscaling
+
+A staged on-device AI engineering project that builds a real-time 2x neural-upscaling pipeline for Android and studies its complete CPU/GPU/NPU cost.
+
+> Status: Phase 1 — minimal spatial PyTorch SR model. Temporal reconstruction, Android, ExecuTorch, QNN, and Vulkan are planned but not implemented.
+
+## Current Pipeline
+
+```text
+Low-resolution RGB tensor (NCHW, float32)
+  -> Lightweight spatial SR model
+  -> High-resolution RGB tensor (2x height and width)
+```
+
+The initial model is deliberately small and export-oriented: two convolutions, ReLU, and PixelShuffle. It establishes a deployment baseline rather than SOTA image quality.
+
+## Quick Start
+
+Requirements: Python 3.10+ and PyTorch 2.0+. From this directory:
+
+```powershell
+python -m unittest discover -s tests -v
+python -m benchmark.benchmark_model --height 64 --width 64 --warmup 10 --iterations 100
+```
+
+The benchmark is inference-only CPU timing, not an end-to-end mobile result.
+
+## Layout
+
+```text
+model/       PyTorch models
+tests/       automated tests
+benchmark/   reproducible benchmarks
+android/     future Android app and native pipeline
+assets/      licensed source media
+results/     generated reports and outputs
+tools/       later export/project utilities
+docs/        specification, plan, and task ledger
+```
+
+## Roadmap
+
+1. Spatial 2x SR on PC.
+2. ExecuTorch export and parity.
+3. Android CPU inference.
+4. Qualcomm QNN / Snapdragon NPU.
+5. FP32 / FP16 / INT8 comparison.
+6. Vulkan preprocess/composite and transfer analysis.
+7. Temporal reconstruction with history, motion vectors, and depth.
+8. Comparative demo and end-to-end benchmark.
+
+See [SPEC](docs/SPEC.md), [PLAN](docs/PLAN.md), [TASKS](docs/TASKS.md), and the [environment report](docs/ENVIRONMENT.md). Architecture diagrams, demo media, deployment findings, profiling, optimization history, and CPU/GPU/NPU comparisons will be added when verified evidence exists.
+
+Phase 1 needs Python, PyTorch, and the NumPy dependency expected by PyTorch. Later phases need separately installed Android/JDK/SDK/NDK, ExecuTorch, Qualcomm QAIRT/QNN, Ninja, and Vulkan tooling. No proprietary SDK is vendored.
