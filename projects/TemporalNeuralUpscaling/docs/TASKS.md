@@ -2,7 +2,7 @@
 
 Updated: 2026-08-15
 
-Active phase: **Phase 1 — Spatial Neural SR**
+Active phase: **Phase 1 — Spatial Neural SR complete; Phase 2 not started**
 
 ## P1.1 — Minimal 2x tensor model and microbenchmark
 
@@ -67,10 +67,30 @@ Verification:
 
 Limitations: installed PyTorch 2.0.0 has no public `torch.export`; TorchScript is only a preflight. Dynamic shapes are observed, not formally declared. ExecuTorch support and QNN delegation—especially PixelShuffle—remain unverified.
 
+## P1.4 — PC baseline report
+
+Status: **complete (2026-08-15)**
+
+- [x] Benchmark deterministic 64x64, 320x180, and 960x540 inputs.
+- [x] Fix CPU execution to one PyTorch thread and record environment/methodology.
+- [x] Measure preprocessing, bilinear, inference, output conversion, and direct neural end-to-end paths.
+- [x] Report mean, median, P90, P95, minimum, and maximum.
+- [x] Generate committed Markdown and JSON reports and document exclusions.
+
+Changed files: `benchmark/pipeline_benchmark.py`, `tools/run_pc_baseline.py`, `tests/test_pipeline_benchmark.py`, `docs/PC_BASELINE.md`, `docs/PC_BASELINE.json`, `README.md`, `docs/SPEC.md`, `docs/PLAN.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `.venv\Scripts\python.exe -m unittest discover -s tests -v` — PASS, 13/13 tests.
+- `.venv\Scripts\python.exe -m tools.run_pc_baseline --sizes 64x64 320x180 960x540 --warmup 5 --iterations 20 --threads 1` — PASS.
+- `python -m json.tool docs\PC_BASELINE.json` — PASS.
+- Median inference / direct neural end-to-end: 0.481 / 0.783 ms at 64x64; 12.175 / 17.939 ms at 320x180; 102.309 / 160.689 ms at 960x540.
+
+Limitations: local eager PyTorch CPU result on an untrained model; PNG I/O, display, transfer, synchronization, sustained load, thermal, power, and mobile execution are excluded. Twenty samples per stage form a development baseline, not a publication-grade performance study.
+
 ## Remaining Work
 
-- [ ] P1.4 PC baseline report (**next**).
-- [ ] Phase 2 ExecuTorch.
+- [ ] Phase 2.1: select and document a compatible PyTorch/ExecuTorch toolchain (**next**).
 - [ ] Phase 3 Android CPU.
 - [ ] Phase 4 QNN/NPU.
 - [ ] Phase 5 quantization.

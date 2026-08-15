@@ -52,3 +52,12 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Record dtype/layout and static/dynamic shape assumptions.
 - Identify PixelShuffle, convolution lowering, and host-side validation as deployment checks.
 - Clearly distinguish a TorchScript preflight from a supported `torch.export`/ExecuTorch artifact.
+
+### Phase 1 Task 4
+
+- Benchmark deterministic 64x64, 320x180, and 960x540 RGB inputs on the local PC CPU.
+- Fix and report PyTorch thread count, warmup, iterations, environment, model size, and tensor contract.
+- Separately measure preprocessing, bilinear 2x, inference, output conversion, and directly measured neural end-to-end latency.
+- Report mean, median, P90, P95, minimum, and maximum in machine-readable JSON and Markdown.
+- Exclude and disclose PNG I/O, mobile/device transfer, display, thermal, and power costs.
+- Treat results as an engineering baseline for an untrained model, never as an SR quality claim.

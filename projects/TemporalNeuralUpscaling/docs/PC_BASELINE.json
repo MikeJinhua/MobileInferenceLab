@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "scope": "local PC CPU baseline; PNG I/O excluded; untrained deterministic model",
+  "environment": {
+    "os": "Windows 11 10.0.22621",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-12490F",
+    "logical_cpu_count": 12,
+    "python": "3.10.6",
+    "pytorch": "2.0.0+cpu",
+    "device": "cpu",
+    "dtype": "float32",
+    "layout": "NCHW RGB",
+    "torch_threads": 1
+  },
+  "model": {
+    "name": "SpatialSR2x",
+    "scale_factor": 2,
+    "parameter_count": 2188,
+    "parameter_bytes_fp32": 8752
+  },
+  "results": [
+    {
+      "input_size": [
+        64,
+        64
+      ],
+      "output_size": [
+        128,
+        128
+      ],
+      "warmup": 5,
+      "iterations": 20,
+      "stages": {
+        "rgb_to_tensor": {
+          "mean_ms": 0.027610000000000003,
+          "median_ms": 0.0267,
+          "p90_ms": 0.03152,
+          "p95_ms": 0.032615,
+          "min_ms": 0.0262,
+          "max_ms": 0.0329
+        },
+        "bilinear_2x": {
+          "mean_ms": 0.08876500000000001,
+          "median_ms": 0.08654999999999999,
+          "p90_ms": 0.08739999999999999,
+          "p95_ms": 0.09116000000000003,
+          "min_ms": 0.0861,
+          "max_ms": 0.1284
+        },
+        "model_inference": {
+          "mean_ms": 0.48955000000000004,
+          "median_ms": 0.48085,
+          "p90_ms": 0.51187,
+          "p95_ms": 0.5158,
+          "min_ms": 0.4722,
+          "max_ms": 0.5614
+        },
+        "tensor_to_rgb": {
+          "mean_ms": 0.23763499999999999,
+          "median_ms": 0.21689999999999998,
+          "p90_ms": 0.2962100000000001,
+          "p95_ms": 0.338735,
+          "min_ms": 0.211,
+          "max_ms": 0.3413
+        },
+        "neural_end_to_end": {
+          "mean_ms": 0.7856099999999999,
+          "median_ms": 0.78285,
+          "p90_ms": 0.80815,
+          "p95_ms": 0.8099,
+          "min_ms": 0.7604,
+          "max_ms": 0.8175
+        }
+      }
+    },
+    {
+      "input_size": [
+        320,
+        180
+      ],
+      "output_size": [
+        640,
+        360
+      ],
+      "warmup": 5,
+      "iterations": 20,
+      "stages": {
+        "rgb_to_tensor": {
+          "mean_ms": 0.233405,
+          "median_ms": 0.21025,
+          "p90_ms": 0.28382000000000007,
+          "p95_ms": 0.3110800000000001,
+          "min_ms": 0.1798,
+          "max_ms": 0.3981
+        },
+        "bilinear_2x": {
+          "mean_ms": 1.21688,
+          "median_ms": 1.1328,
+          "p90_ms": 1.4308100000000001,
+          "p95_ms": 1.608135,
+          "min_ms": 1.0736,
+          "max_ms": 1.966
+        },
+        "model_inference": {
+          "mean_ms": 12.18676,
+          "median_ms": 12.17465,
+          "p90_ms": 13.001540000000002,
+          "p95_ms": 13.402305000000002,
+          "min_ms": 11.1509,
+          "max_ms": 13.5373
+        },
+        "tensor_to_rgb": {
+          "mean_ms": 5.50117,
+          "median_ms": 5.33915,
+          "p90_ms": 6.070670000000001,
+          "p95_ms": 6.45668,
+          "min_ms": 5.1561,
+          "max_ms": 6.9731
+        },
+        "neural_end_to_end": {
+          "mean_ms": 17.963565,
+          "median_ms": 17.93865,
+          "p90_ms": 19.18552,
+          "p95_ms": 19.401915,
+          "min_ms": 16.2985,
+          "max_ms": 19.406
+        }
+      }
+    },
+    {
+      "input_size": [
+        960,
+        540
+      ],
+      "output_size": [
+        1920,
+        1080
+      ],
+      "warmup": 5,
+      "iterations": 20,
+      "stages": {
+        "rgb_to_tensor": {
+          "mean_ms": 8.521930000000001,
+          "median_ms": 7.8334,
+          "p90_ms": 9.396670000000007,
+          "p95_ms": 13.86567,
+          "min_ms": 6.9362,
+          "max_ms": 14.7695
+        },
+        "bilinear_2x": {
+          "mean_ms": 13.036904999999999,
+          "median_ms": 12.68345,
+          "p90_ms": 14.43093,
+          "p95_ms": 14.962205,
+          "min_ms": 12.1027,
+          "max_ms": 15.6805
+        },
+        "model_inference": {
+          "mean_ms": 103.57697,
+          "median_ms": 102.30905,
+          "p90_ms": 108.85511,
+          "p95_ms": 110.39942,
+          "min_ms": 97.737,
+          "max_ms": 118.262
+        },
+        "tensor_to_rgb": {
+          "mean_ms": 52.635555,
+          "median_ms": 52.21995,
+          "p90_ms": 54.4447,
+          "p95_ms": 54.94867000000001,
+          "min_ms": 49.4395,
+          "max_ms": 59.377
+        },
+        "neural_end_to_end": {
+          "mean_ms": 161.997555,
+          "median_ms": 160.68925000000002,
+          "p90_ms": 167.82058,
+          "p95_ms": 170.12906,
+          "min_ms": 156.4642,
+          "max_ms": 171.1752
+        }
+      }
+    }
+  ]
+}

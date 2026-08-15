@@ -15,6 +15,10 @@ Initial model: `Conv2d -> ReLU -> Conv2d -> PixelShuffle(2)`, using float32 NCHW
 
 The detected PyTorch 2.0.0 environment predates the public `torch.export` API expected by current ExecuTorch workflows. P1.3 therefore uses a frozen TorchScript trace only as a local ATen operator inventory and shape/parity preflight; it does not create or claim an ExecuTorch-compatible artifact. The trace targets `SpatialSR2x.network`, the tensor-only inference core. Python input validation remains a host-side contract because trace cannot preserve its data-dependent Python guards. Phase 2 must select compatible PyTorch/ExecuTorch versions, use the supported export API, and revalidate operators, dynamic shapes, and delegation.
 
+### P1.4 PC baseline method
+
+Measure a deterministic synthetic RGB source at 64x64, 320x180, and 960x540 on CPU with one PyTorch thread. Report warmup, sample count, mean, median, P90, P95, minimum, and maximum for RGB-to-tensor preprocessing, Pillow bilinear 2x, model inference, tensor-to-RGB conversion, and an independently measured neural end-to-end path. Exclude PNG disk I/O and label results as a local PyTorch CPU baseline, not a mobile or sustained-performance result. Independent stage distributions are diagnostic and are not summed to replace the directly measured end-to-end distribution.
+
 ## Later Phases
 
 - **Phase 2:** pin compatible PyTorch/ExecuTorch versions, export, inspect graph/unsupported operators, compare outputs.
