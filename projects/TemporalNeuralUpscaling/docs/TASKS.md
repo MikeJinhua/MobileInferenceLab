@@ -1,8 +1,8 @@
 # Task Ledger
 
-Updated: 2026-08-15
+Updated: 2026-08-16
 
-Active phase: **Phase 3 — Android CPU (next)**
+Active phase: **Phase 3 — Android CPU**
 
 ## P1.1 — Minimal 2x tensor model and microbenchmark
 
@@ -206,9 +206,35 @@ Limitations: the contract supports only batch 1, RGB float32, and dimensions `16
 
 Phase 2 outcome: **complete**. Static export offers full single-partition XNNPACK delegation; bounded dynamic export offers verified size flexibility with reshape fallback. Phase 3 must measure both on Android before choosing the app artifact.
 
+## P3.1 — Android toolchain decision and readiness audit
+
+Status: **complete (2026-08-16)**
+
+- [x] Select Maven Central `executorch-android:1.3.1` with XNNPACK for the first CPU app.
+- [x] Pin JDK 17, AGP 8.9.x, Gradle 8.11.1, API/Build Tools 35, and NDK r28c.
+- [x] Add a non-mutating Android prerequisite checker and unit tests.
+- [x] Record the actual host tools and connected-device state.
+- [x] Install no system-level packages and create no unverified Android scaffold.
+
+Changed files: `tools/check_android_environment.py`, `tests/test_android_environment.py`, `docs/ANDROID_TOOLCHAIN.md`, `README.md`, `docs/SPEC.md`, `docs/PLAN.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `.venv\Scripts\python.exe -m tools.check_android_environment --output results\p3_1\android_environment.json` — PASS (audit completed).
+- Found: ADB 36.0.0 and CMake; no connected Android device.
+- Missing: JDK, Android SDK/SDK Manager, Android NDK, and Ninja.
+- `ready_for_android_build: false`; this is the expected evidence from the current host, not a successful build claim.
+- Strict readiness gate returns the expected exit code 1 while prerequisites are missing.
+- Phase 1 environment tests: PASS, 16 passed plus 4 expected ExecuTorch-only skips.
+- ExecuTorch environment tests: PASS, 20/20.
+
+Limitations: P3.1 establishes the integration route and readiness gate only. No Android project, APK, device inference, or timing result exists yet.
+
 ## Remaining Work
 
-- [ ] Phase 3 Android CPU (**next**).
+- [ ] P3.2: install/verify the pinned Android prerequisites, then scaffold and build the minimal app (**next; environment gate currently not ready**).
+- [ ] P3.3: package the reproducibly generated static XNNPACK `.pte` and implement device inference.
+- [ ] P3.4: add RGB conversion/display and separated Android CPU timing.
 - [ ] Phase 4 QNN/NPU.
 - [ ] Phase 5 quantization.
 - [ ] Phase 6 Vulkan pipeline.

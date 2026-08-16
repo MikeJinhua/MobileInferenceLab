@@ -104,3 +104,11 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Require eager/runtime numerical parity within `1e-5` on both backends.
 - Record XNNPACK delegate/fallback topology and representative out-of-range rejection.
 - Treat mobile performance and the fixed-versus-dynamic deployment choice as Phase 3 measurements.
+
+### Phase 3 Task 1 — Android Toolchain Readiness
+
+- Select a versioned Android/Gradle/JDK/NDK contract compatible with ExecuTorch 1.3.1.
+- Select the official Maven Central ExecuTorch AAR and XNNPACK CPU path for the first app.
+- Add a non-mutating environment checker covering JDK, SDK, SDK Manager, platform tools, NDK, CMake, Ninja, and connected-device state.
+- Record the actual host result and installation instructions without silently installing system-level tools.
+- Do not scaffold or claim a buildable Android app until the strict readiness gate passes.
