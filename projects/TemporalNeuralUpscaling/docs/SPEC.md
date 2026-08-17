@@ -112,3 +112,11 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Add a non-mutating environment checker covering JDK, SDK, SDK Manager, platform tools, NDK, CMake, Ninja, and connected-device state.
 - Record the actual host result and installation instructions without silently installing system-level tools.
 - Do not scaffold or claim a buildable Android app until the strict readiness gate passes.
+
+### Phase 3 Task 2 — Minimal Android App Build and Launch
+
+- Separate the prebuilt-AAR build gate from the later native C++ toolchain gate.
+- Create a minimal version-pinned Java Android application with the ExecuTorch 1.3.1 Maven dependency.
+- Use only a launcher Activity and status UI; do not implement model inference yet.
+- Build a debug APK, install it on the connected arm64 device, and verify launch/process state without a crash.
+- Keep `local.properties`, Gradle caches, build output, APKs, and device identifiers out of Git.

@@ -13,6 +13,10 @@ DEFAULT_SDK_CANDIDATES = (
     Path.home() / "AppData" / "Local" / "Android" / "Sdk",
     Path("C:/Android/Sdk"),
 )
+DEFAULT_STUDIO_CANDIDATES = (
+    Path("E:/Program Files/Android/Android Studio"),
+    Path("C:/Program Files/Android/Android Studio"),
+)
 
 
 def first_existing_path(values: Iterable[Optional[str]]) -> Optional[Path]:
@@ -76,6 +80,10 @@ def inspect_environment(environment: Mapping[str, str] = os.environ) -> Dict[str
     java = command_path("java")
     javac = command_path("javac")
     java_home = first_existing_path([environment.get("JAVA_HOME")])
+    if not java_home:
+        studio_root = first_existing_path(str(path) for path in DEFAULT_STUDIO_CANDIDATES)
+        if studio_root and (studio_root / "jbr").is_dir():
+            java_home = studio_root / "jbr"
     if java_home:
         java_candidate = java_home / "bin" / "java.exe"
         javac_candidate = java_home / "bin" / "javac.exe"
@@ -87,12 +95,20 @@ def inspect_environment(environment: Mapping[str, str] = os.environ) -> Dict[str
     ndk_versions = []
     if sdk_root and (sdk_root / "ndk").is_dir():
         ndk_versions = sorted(path.name for path in (sdk_root / "ndk").iterdir() if path.is_dir())
+    platform_versions = []
+    build_tools_versions = []
+    if sdk_root and (sdk_root / "platforms").is_dir():
+        platform_versions = sorted(path.name for path in (sdk_root / "platforms").iterdir() if path.is_dir())
+    if sdk_root and (sdk_root / "build-tools").is_dir():
+        build_tools_versions = sorted(path.name for path in (sdk_root / "build-tools").iterdir() if path.is_dir())
 
     checks = {
         "jdk": bool(java and javac),
         "android_sdk": sdk_root is not None,
         "sdkmanager": sdkmanager is not None,
         "platform_tools": adb is not None,
+        "sdk_platform": bool(platform_versions),
+        "build_tools": bool(build_tools_versions),
         "android_ndk": bool(ndk_versions),
         "cmake": command_path("cmake") is not None,
         "ninja": command_path("ninja") is not None,
@@ -100,18 +116,24 @@ def inspect_environment(environment: Mapping[str, str] = os.environ) -> Dict[str
     }
     adb_report = adb_details(adb)
     checks["connected_device"] = bool(adb_report["devices"])
-    required_for_p3_2 = (
+    required_for_aar_build = (
         "jdk",
         "android_sdk",
-        "sdkmanager",
         "platform_tools",
+        "sdk_platform",
+        "build_tools",
+    )
+    required_for_native_build = (
+        *required_for_aar_build,
         "android_ndk",
         "cmake",
         "ninja",
     )
     return {
-        "ready_for_android_build": all(checks[name] for name in required_for_p3_2),
-        "ready_for_device_validation": all(checks.values()),
+        "ready_for_android_build": all(checks[name] for name in required_for_aar_build),
+        "ready_for_native_build": all(checks[name] for name in required_for_native_build),
+        "ready_for_device_validation": all(checks[name] for name in required_for_aar_build)
+        and checks["connected_device"],
         "checks": checks,
         "paths": {
             "java": java,
@@ -123,6 +145,8 @@ def inspect_environment(environment: Mapping[str, str] = os.environ) -> Dict[str
             "ninja": command_path("ninja"),
         },
         "ndk_versions": ndk_versions,
+        "platform_versions": platform_versions,
+        "build_tools_versions": build_tools_versions,
         "adb": adb_report,
     }
 

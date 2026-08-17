@@ -1,6 +1,6 @@
 # Task Ledger
 
-Updated: 2026-08-16
+Updated: 2026-08-17
 
 Active phase: **Phase 3 — Android CPU**
 
@@ -230,10 +230,36 @@ Verification:
 
 Limitations: P3.1 establishes the integration route and readiness gate only. No Android project, APK, device inference, or timing result exists yet.
 
+## P3.2 — Minimal Android app build and device launch
+
+Status: **complete (2026-08-17)**
+
+- [x] Discover and adopt the installed Quail 3/JBR 25/API 37 toolchain.
+- [x] Separate the prebuilt-AAR readiness gate from future native C++ prerequisites.
+- [x] Create a minimal Java launcher app using Maven `executorch-android:1.3.1`.
+- [x] Build the debug APK with AGP 9.3.0 and Gradle 9.5.0.
+- [x] Install and cold-launch the app on the connected arm64 Samsung phone.
+- [x] Add static Android scaffold regression tests.
+
+Changed files: `android/settings.gradle.kts`, `android/build.gradle.kts`, `android/gradle.properties`, `android/gradlew`, `android/gradlew.bat`, `android/gradle/wrapper/*`, `android/app/build.gradle.kts`, `android/app/src/main/AndroidManifest.xml`, `android/app/src/main/java/com/mike/mobileinferencelab/temporalsr/MainActivity.java`, `android/app/src/main/res/values/*`, `tools/check_android_environment.py`, `tests/test_android_scaffold.py`, `docs/ANDROID_TOOLCHAIN.md`, `README.md`, `docs/SPEC.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- Android readiness: AAR build and connected-device gates PASS; native C++ gate remains false because NDK/Ninja are absent.
+- `android\gradlew.bat -p android :app:assembleDebug` — PASS.
+- Debug APK: 27,928,417 bytes; generated under ignored `android/app/build/`.
+- `adb install -r ...\app-debug.apk` — Success.
+- `adb shell am start -W .../.MainActivity` — status OK, cold launch 412 ms.
+- Device process and focused Activity confirmed; no `AndroidRuntime` fatal exception observed.
+- Phase 1 environment tests: PASS, 18 passed plus 4 expected ExecuTorch-only skips.
+- ExecuTorch environment tests: PASS, 22/22.
+- Incremental Android rebuild: PASS in 1 second, 35 tasks up-to-date.
+
+Limitations: the app currently displays only a Phase 3 status message. It resolves/packages the ExecuTorch AAR but does not load a `.pte`, create tensors, run inference, display SR output, or report inference timing. The launch time is not an ML benchmark.
+
 ## Remaining Work
 
-- [ ] P3.2: install/verify the pinned Android prerequisites, then scaffold and build the minimal app (**next; environment gate currently not ready**).
-- [ ] P3.3: package the reproducibly generated static XNNPACK `.pte` and implement device inference.
+- [ ] P3.3: package the reproducibly generated static XNNPACK `.pte` and implement device inference (**next**).
 - [ ] P3.4: add RGB conversion/display and separated Android CPU timing.
 - [ ] Phase 4 QNN/NPU.
 - [ ] Phase 5 quantization.

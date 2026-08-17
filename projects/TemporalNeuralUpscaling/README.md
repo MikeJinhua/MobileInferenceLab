@@ -2,7 +2,7 @@
 
 A staged on-device AI engineering project that builds a real-time 2x neural-upscaling pipeline for Android and studies its complete CPU/GPU/NPU cost.
 
-> Status: Phases 1 and 2 complete. Portable and XNNPACK `SpatialSR2x` artifacts pass static and bounded-dynamic export/runtime parity. Android, QNN, Vulkan, quantization, and temporal work remain.
+> Status: Phases 1 and 2 complete; Phase 3.2 minimal Android/ExecuTorch app builds, installs, and launches on an arm64 phone. Model inference, display pipeline, Android timing, QNN, Vulkan, quantization, and temporal work remain.
 
 ## Current Pipeline
 
