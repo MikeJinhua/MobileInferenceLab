@@ -138,3 +138,11 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Separately report model copy/load and preprocessing, inference, postprocessing, directly measured neural end-to-end, and bilinear timing.
 - Use warmup and repeated samples and report mean, median, P95, minimum, and maximum.
 - Treat random-weight output as pipeline validation only; do not claim SR image quality.
+
+### Phase 4 Task 1 — QNN Toolchain and Device Readiness
+
+- Select and document a version-matched ExecuTorch, QAIRT/QNN, Linux/WSL, Android NDK, device SoC, HTP architecture, and initial precision route.
+- Add a non-mutating checker for WSL, NDK, QNN SDK layout, required Python support, connected arm64 device, and supported Qualcomm SoC.
+- Inspect the installed QNN backend for current-model operator evidence while treating real partitioning as the compatibility gate.
+- Keep proprietary SDK contents, generated models, runtime libraries, device serials, and local reports out of Git.
+- Do not export or claim QNN/NPU execution until the strict readiness gate passes.

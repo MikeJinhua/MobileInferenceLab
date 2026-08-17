@@ -2,7 +2,7 @@
 
 Updated: 2026-08-17
 
-Active phase: **Phase 4 — Qualcomm QNN/NPU (next)**
+Active phase: **Phase 4 — Qualcomm QNN/NPU**
 
 ## P1.1 — Minimal 2x tensor model and microbenchmark
 
@@ -313,10 +313,37 @@ Limitations: deterministic random weights validate the connected image pipeline 
 
 Phase 3 outcome: **complete**. A reproducible static XNNPACK model now executes from RGB input to visible 2x RGB output on a physical Android phone with separated CPU timing.
 
+## P4.1 — QNN toolchain and device readiness
+
+Status: **complete (2026-08-17)**
+
+- [x] Select the SM8550 / HTP v73 target and a version-matched QNN deployment route.
+- [x] Pin WSL Ubuntu 22.04, Android NDK 26c, ExecuTorch 1.3.1, and QNN `2.37.0.250724` for the first gate.
+- [x] Choose static 64x64 HTP FP16 before Phase 5 quantization.
+- [x] Add a non-mutating host/device readiness checker and unit tests.
+- [x] Confirm the installed backend contains QNN PixelShuffle/DepthToSpace handling, without claiming delegation.
+- [x] Record missing prerequisites and public-repository safety boundaries.
+
+Changed files: `tools/check_qnn_environment.py`, `tests/test_qnn_environment.py`, `docs/QNN_READINESS.md`, `README.md`, `docs/SPEC.md`, `docs/PLAN.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `.venv-executorch\Scripts\python.exe -m tools.check_qnn_environment --output results\p4_1\qnn_environment.json` — audit PASS; overall readiness false.
+- Device checks — PASS: arm64-v8a, Qualcomm `SM8550`, supported schema target HTP v73.
+- ExecuTorch Qualcomm backend — present; current-model PixelShuffle has explicit backend handling in installed source.
+- Missing gates — WSL Ubuntu 22.04, Android NDK, `QNN_SDK_ROOT`/valid SDK layout, and `py-cpuinfo`.
+- `--strict` — expected exit code 1 while prerequisites are absent.
+- Phase 1 environment tests — PASS, 24 passed plus 4 expected ExecuTorch-only skips.
+- ExecuTorch environment tests — PASS, 28/28.
+
+Limitations: no QNN SDK was installed, no model was lowered, no QNN-capable Android runtime was built, and no NPU execution/delegation/performance claim exists. Installed-source operator handlers are only preflight evidence.
+
 ## Remaining Work
 
 - [x] P3.4: add RGB conversion/display and separated Android CPU timing.
-- [ ] Phase 4 QNN/NPU (**next**).
+- [ ] P4.2: install/verify the licensed QNN build environment and pass the strict gate (**next**).
+- [ ] P4.3: lower the static model and verify QNN delegation/fallback.
+- [ ] P4.4: run on-device HTP inference and measure initialization/load/inference/memory.
 - [ ] Phase 5 quantization.
 - [ ] Phase 6 Vulkan pipeline.
 - [ ] Phase 7 temporal reconstruction.
