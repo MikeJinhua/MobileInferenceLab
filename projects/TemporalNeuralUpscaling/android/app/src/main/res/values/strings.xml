@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Temporal Neural Upscaling</string>
-    <string name="phase3_ready">Phase 3 Android CPU scaffold is ready. Model inference comes next.</string>
+    <string name="phase3_ready">Preparing deterministic ExecuTorch XNNPACK inference…</string>
 </resources>

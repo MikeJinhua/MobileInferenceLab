@@ -120,3 +120,12 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Use only a launcher Activity and status UI; do not implement model inference yet.
 - Build a debug APK, install it on the connected arm64 device, and verify launch/process state without a crash.
 - Keep `local.properties`, Gradle caches, build output, APKs, and device identifiers out of Git.
+
+### Phase 3 Task 3 — Static XNNPACK Device Inference
+
+- Reproducibly generate the static XNNPACK `.pte` into an ignored Android asset path.
+- Fail the Android build clearly when the generated model asset is absent.
+- Copy the packaged asset to app-private storage, load it through ExecuTorch 1.3.1, and create a deterministic float32 `[1,3,64,64]` tensor.
+- Execute the model on a connected arm64 phone and require `[1,3,128,128]` finite output.
+- Require repeated-device inference determinism and checksum agreement with a PC eager reference within documented tolerances.
+- Do not claim image quality or a performance benchmark; image conversion/display and separated timing remain P3.4.

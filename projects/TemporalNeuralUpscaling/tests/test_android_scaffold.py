@@ -19,6 +19,7 @@ class AndroidScaffoldTest(unittest.TestCase):
         self.assertIn("gradle-9.5.0-bin.zip", wrapper)
         self.assertIn("compileSdk = 37", app_build)
         self.assertIn('executorch-android:1.3.1', app_build)
+        self.assertIn("verifySpatialSrModel", app_build)
 
     def test_launcher_activity_is_declared(self) -> None:
         manifest = (
@@ -39,6 +40,24 @@ class AndroidScaffoldTest(unittest.TestCase):
         self.assertIn("android.intent.action.MAIN", manifest)
         self.assertIn("android.intent.category.LAUNCHER", manifest)
         self.assertTrue(activity.is_file())
+
+    def test_device_runner_uses_static_tensor_contract(self) -> None:
+        runner = (
+            ANDROID_ROOT
+            / "app"
+            / "src"
+            / "main"
+            / "java"
+            / "com"
+            / "mike"
+            / "mobileinferencelab"
+            / "temporalsr"
+            / "SpatialSrRunner.java"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Module.load", runner)
+        self.assertIn("Tensor.fromBlob", runner)
+        self.assertIn("module.forward", runner)
+        self.assertIn("{1, 3, 128, 128}", runner)
 
 
 if __name__ == "__main__":

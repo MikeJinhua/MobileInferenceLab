@@ -257,10 +257,37 @@ Verification:
 
 Limitations: the app currently displays only a Phase 3 status message. It resolves/packages the ExecuTorch AAR but does not load a `.pte`, create tensors, run inference, display SR output, or report inference timing. The launch time is not an ML benchmark.
 
+## P3.3 — Static XNNPACK device inference
+
+Status: **complete (2026-08-17)**
+
+- [x] Add a reproducible Android model-asset preparation command.
+- [x] Add a Gradle gate that rejects a missing generated `.pte`.
+- [x] Copy the asset to app-private storage and load it with the ExecuTorch AAR.
+- [x] Run deterministic `[1,3,64,64]` input twice on the connected arm64 phone.
+- [x] Validate output shape, finiteness, repeat determinism, and PC eager checksum agreement.
+- [x] Keep the generated model, APK, report, and device identifiers out of Git.
+
+Changed files: `tools/prepare_android_model.py`, `android/app/build.gradle.kts`, `android/app/src/main/java/com/mike/mobileinferencelab/temporalsr/MainActivity.java`, `android/app/src/main/java/com/mike/mobileinferencelab/temporalsr/SpatialSrRunner.java`, `android/app/src/main/res/values/strings.xml`, `tests/test_android_scaffold.py`, `docs/ANDROID_DEVICE_INFERENCE.md`, `README.md`, `docs/SPEC.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `.venv-executorch\Scripts\python.exe -m tools.prepare_android_model` — PASS.
+- Static XNNPACK asset: 12,592 bytes; one delegate; zero fallback; SHA-256 `d2edf8943f59b463fae7fcdc1eee147e604d45a2cc8e42dfe9f6c2dcd0cc4b13`.
+- `android\gradlew.bat -p android :app:assembleDebug` — PASS; model-asset gate executed.
+- APK reinstall and Activity launch — PASS.
+- Device output `[1,3,128,128]`; finite min/max `-0.429966062` / `0.347079456`.
+- Repeated-device maximum difference: 0.
+- Device checksum `501.158083683`; PC eager reference `501.158030012808`; difference `5.36697771e-05` (tolerance `1e-3`).
+- Phase 1 environment tests: PASS, 19 passed plus 4 expected ExecuTorch-only skips.
+- ExecuTorch environment tests: PASS, 23/23.
+- Final APK build, reinstall, cold launch, and `status=PASS` logcat gate — PASS.
+
+Limitations: deterministic random weights validate only the deployment pipeline. This is not an image-quality result or performance benchmark; Bitmap conversion, output display, separated latency statistics, sustained load, thermal, power, QNN, and Vulkan remain unverified.
+
 ## Remaining Work
 
-- [ ] P3.3: package the reproducibly generated static XNNPACK `.pte` and implement device inference (**next**).
-- [ ] P3.4: add RGB conversion/display and separated Android CPU timing.
+- [ ] P3.4: add RGB conversion/display and separated Android CPU timing (**next**).
 - [ ] Phase 4 QNN/NPU.
 - [ ] Phase 5 quantization.
 - [ ] Phase 6 Vulkan pipeline.

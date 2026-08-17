@@ -24,3 +24,17 @@ android {
 dependencies {
     implementation("org.pytorch:executorch-android:1.3.1")
 }
+
+val spatialSrModel = layout.projectDirectory.file("src/main/assets/spatial_sr_xnnpack.pte")
+val verifySpatialSrModel by tasks.registering {
+    inputs.file(spatialSrModel)
+    doLast {
+        require(spatialSrModel.asFile.isFile) {
+            "Missing generated model asset. Run: .venv-executorch\\Scripts\\python.exe -m tools.prepare_android_model"
+        }
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn(verifySpatialSrModel)
+}
