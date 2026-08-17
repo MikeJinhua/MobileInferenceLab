@@ -2,7 +2,7 @@
 
 Updated: 2026-08-17
 
-Active phase: **Phase 3 — Android CPU**
+Active phase: **Phase 4 — Qualcomm QNN/NPU (next)**
 
 ## P1.1 — Minimal 2x tensor model and microbenchmark
 
@@ -285,10 +285,38 @@ Verification:
 
 Limitations: deterministic random weights validate only the deployment pipeline. This is not an image-quality result or performance benchmark; Bitmap conversion, output display, separated latency statistics, sustained load, thermal, power, QNN, and Vulkan remain unverified.
 
+## P3.4 — Android RGB image pipeline and CPU timing
+
+Status: **complete (2026-08-17)**
+
+- [x] Generate a deterministic, project-owned 64x64 RGB image on device.
+- [x] Convert Bitmap RGB to float32 NCHW and neural output back to clamped RGB.
+- [x] Display original, Android bilinear 2x, and ExecuTorch/XNNPACK neural 2x images.
+- [x] Warm up and separately measure model copy/load, preprocess, inference, postprocess, direct neural E2E, and bilinear.
+- [x] Report mean, median, P95, minimum, and maximum over 20 samples.
+- [x] Build, reinstall, cold-launch, inspect the UI, and require a device `status=PASS` log.
+
+Changed files: `android/app/src/main/java/com/mike/mobileinferencelab/temporalsr/ImageSrPipeline.java`, `android/app/src/main/java/com/mike/mobileinferencelab/temporalsr/MainActivity.java`, `android/app/src/main/res/values/strings.xml`, `tests/test_android_scaffold.py`, `docs/ANDROID_IMAGE_PIPELINE.md`, `README.md`, `docs/SPEC.md`, `docs/PLAN.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `android\gradlew.bat -p android :app:assembleDebug` — PASS, 36 tasks.
+- Phase 1 environment tests — PASS, 20 passed plus 4 expected ExecuTorch-only skips.
+- ExecuTorch environment tests — PASS, 24/24.
+- APK reinstall and Activity cold launch — PASS; launch `TotalTime` 198 ms is not an ML metric.
+- Device UI — PASS; all three labeled RGB images were visually checked at 64x64 input and 128x128 outputs.
+- Device XNNPACK inference median/P95: 0.372/1.044 ms.
+- Direct neural E2E median/P95: 1.018/8.002 ms; bilinear median/P95: 0.124/0.142 ms.
+- One-time model copy/load: 2.396/9.558 ms. Full distributions are in `docs/ANDROID_IMAGE_PIPELINE.md`.
+
+Limitations: deterministic random weights validate the connected image pipeline only and do not establish SR quality. This short run excludes UI rendering, sustained load, thermal, power, memory, QNN, Vulkan, and PNG I/O. Generated model/APK/screenshots/logs and device identifiers remain ignored.
+
+Phase 3 outcome: **complete**. A reproducible static XNNPACK model now executes from RGB input to visible 2x RGB output on a physical Android phone with separated CPU timing.
+
 ## Remaining Work
 
-- [ ] P3.4: add RGB conversion/display and separated Android CPU timing (**next**).
-- [ ] Phase 4 QNN/NPU.
+- [x] P3.4: add RGB conversion/display and separated Android CPU timing.
+- [ ] Phase 4 QNN/NPU (**next**).
 - [ ] Phase 5 quantization.
 - [ ] Phase 6 Vulkan pipeline.
 - [ ] Phase 7 temporal reconstruction.

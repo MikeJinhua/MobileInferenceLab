@@ -59,6 +59,19 @@ class AndroidScaffoldTest(unittest.TestCase):
         self.assertIn("module.forward", runner)
         self.assertIn("{1, 3, 128, 128}", runner)
 
+    def test_android_image_pipeline_has_rgb_display_and_stage_timing(self) -> None:
+        pipeline = (
+            ANDROID_ROOT / "app" / "src" / "main" / "java" / "com" / "mike"
+            / "mobileinferencelab" / "temporalsr" / "ImageSrPipeline.java"
+        ).read_text(encoding="utf-8")
+        self.assertIn("bitmapToNchw", pipeline)
+        self.assertIn("nchwToBitmap", pipeline)
+        self.assertIn("Bitmap.createScaledBitmap", pipeline)
+        self.assertIn("WARMUP = 5", pipeline)
+        self.assertIn("ITERATIONS = 20", pipeline)
+        for stage in ("preprocess", "inference", "postprocess", "neuralEndToEnd"):
+            self.assertIn(stage, pipeline)
+
 
 if __name__ == "__main__":
     unittest.main()

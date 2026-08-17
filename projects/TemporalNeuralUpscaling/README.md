@@ -2,7 +2,7 @@
 
 A staged on-device AI engineering project that builds a real-time 2x neural-upscaling pipeline for Android and studies its complete CPU/GPU/NPU cost.
 
-> Status: Phases 1 and 2 complete; Phase 3.3 static XNNPACK tensor inference passes through ExecuTorch on an arm64 Android phone. Image display/conversion, Android timing, QNN, Vulkan, quantization, and temporal work remain.
+> Status: Phases 1-3 complete. The Android app displays deterministic RGB input, bilinear 2x, and ExecuTorch/XNNPACK neural 2x output and reports separated CPU timing on an arm64 phone. QNN, Vulkan, quantization, and temporal work remain.
 
 ## Current Pipeline
 
@@ -63,6 +63,6 @@ docs/        specification, plan, and task ledger
 7. Temporal reconstruction with history, motion vectors, and depth.
 8. Comparative demo and end-to-end benchmark.
 
-See [SPEC](docs/SPEC.md), [PLAN](docs/PLAN.md), [TASKS](docs/TASKS.md), the [ExecuTorch toolchain decision](docs/EXECUTORCH_TOOLCHAIN.md), the [Android toolchain/readiness report](docs/ANDROID_TOOLCHAIN.md), the [Android device-inference report](docs/ANDROID_DEVICE_INFERENCE.md), the [ExecuTorch smoke result](docs/EXECUTORCH_SMOKE.md), the [SpatialSR portable export report](docs/SPATIAL_SR_PORTABLE_EXPORT.md), the [SpatialSR XNNPACK report](docs/SPATIAL_SR_XNNPACK_EXPORT.md), the [bounded-dynamic report](docs/SPATIAL_SR_DYNAMIC_EXPORT.md), the [PC baseline](docs/PC_BASELINE.md), the [export-readiness report](docs/EXPORT_READINESS.md), and the [environment report](docs/ENVIRONMENT.md). Architecture diagrams, demo media, deployment findings, profiling, optimization history, and CPU/GPU/NPU comparisons will be added when verified evidence exists.
+See [SPEC](docs/SPEC.md), [PLAN](docs/PLAN.md), [TASKS](docs/TASKS.md), the [Android RGB/timing report](docs/ANDROID_IMAGE_PIPELINE.md), the [Android device-inference report](docs/ANDROID_DEVICE_INFERENCE.md), the [Android toolchain/readiness report](docs/ANDROID_TOOLCHAIN.md), and the other reports in `docs/`. Architecture diagrams, demo media, deployment findings, profiling, optimization history, and CPU/GPU/NPU comparisons will be added when verified evidence exists.
 
 Phase 1 needs Python, PyTorch, and the NumPy dependency expected by PyTorch. Later phases need separately installed Android/JDK/SDK/NDK, ExecuTorch, Qualcomm QAIRT/QNN, Ninja, and Vulkan tooling. No proprietary SDK is vendored.

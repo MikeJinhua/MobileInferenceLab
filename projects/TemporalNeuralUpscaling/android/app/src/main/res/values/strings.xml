@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Temporal Neural Upscaling</string>
-    <string name="phase3_ready">Preparing deterministic ExecuTorch XNNPACK inference…</string>
+    <string name="phase3_ready">Running deterministic RGB image pipeline and benchmark…</string>
 </resources>

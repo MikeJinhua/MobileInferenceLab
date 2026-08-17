@@ -129,3 +129,12 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Execute the model on a connected arm64 phone and require `[1,3,128,128]` finite output.
 - Require repeated-device inference determinism and checksum agreement with a PC eager reference within documented tolerances.
 - Do not claim image quality or a performance benchmark; image conversion/display and separated timing remain P3.4.
+
+### Phase 3 Task 4 — Android RGB Pipeline and CPU Timing
+
+- Generate a deterministic, publicly reproducible RGB source without downloading media.
+- Convert Bitmap RGB to normalized float32 NCHW, run the static XNNPACK model, and convert its 2x output back to RGB.
+- Display the original 64x64 image, bilinear 128x128 baseline, and neural 128x128 output on the phone.
+- Separately report model copy/load and preprocessing, inference, postprocessing, directly measured neural end-to-end, and bilinear timing.
+- Use warmup and repeated samples and report mean, median, P95, minimum, and maximum.
+- Treat random-weight output as pipeline validation only; do not claim SR image quality.
