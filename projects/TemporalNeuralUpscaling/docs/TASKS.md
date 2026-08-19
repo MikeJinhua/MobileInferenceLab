@@ -409,23 +409,42 @@ Limitations: the x86 host cannot execute the offline SM8550 HTP context. Device 
 
 ## P4.4 — On-device QNN HTP inference and measurements
 
-Status: **pending**
+Status: **complete (2026-08-20)**
 
-- [ ] Define and document the version-matched QNN Android runtime packaging/build route before implementation.
-- [ ] Build or package an ExecuTorch Android runtime that includes `QnnBackend` for arm64-v8a without committing Qualcomm libraries.
-- [ ] Package the ignored P4.3 model and required matching QNN/HTP v73 runtime libraries through a reproducible local preparation command.
-- [ ] Install and launch the app on the connected SM8550 phone and prove the QNN delegate initializes and executes on HTP.
-- [ ] Verify output shape, finiteness, repeat determinism, and numerical agreement with the deterministic eager reference.
-- [ ] Measure and report initialization, model load, warm inference distribution, direct image-pipeline timing, and process memory with stated methodology.
-- [ ] Retain the XNNPACK baseline, add automated/static regression tests, update documentation, and keep generated/proprietary/device-specific artifacts untracked.
+- [x] Define and document the version-matched QNN Android runtime packaging/build route before implementation.
+- [x] Build an official ExecuTorch Android runner that includes `QnnBackend` for arm64-v8a without committing Qualcomm libraries.
+- [x] Deploy the ignored P4.3 model and required matching QNN/HTP v73 runtime libraries through a reproducible local command.
+- [x] Run on the connected SM8550 phone and prove the QNN delegate initializes and executes through the HTP backend.
+- [x] Verify output shape, finiteness, repeat determinism, and numerical agreement with the deterministic eager reference.
+- [x] Measure and report model/backend load, a 20-sample warm inference distribution, and process peak RSS with stated methodology.
+- [x] Retain the XNNPACK baseline, add automated/static regression tests, update documentation, and keep generated/proprietary/device-specific artifacts untracked.
+
+Changed files: `tools/build_qnn_runner.sh`, `tools/run_qnn_on_device.sh`, `tools/qnn_memory_probe.sh`, `tools/prepare_qnn_device_inputs.py`, `tools/analyze_qnn_device_output.py`, `tests/test_qnn_device_inputs.py`, `tests/test_qnn_device_output.py`, `docs/QNN_DEVICE_INFERENCE.md`, `README.md`, `docs/SPEC.md`, `docs/PLAN.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `bash tools/build_qnn_runner.sh` — PASS; official ExecuTorch v1.3.1 arm64 Android `qnn_executor_runner` and `libqnn_executorch_backend.so` built with NDK r26c/QNN 2.37.0.250724.
+- `file .../qnn_executor_runner .../libqnn_executorch_backend.so` — PASS; both are Android ARM aarch64 ELF artifacts.
+- `bash tools/run_qnn_on_device.sh` — PASS on connected SM8550; QNN HTP backend type 2 restored the offline context and executed 20 measured samples.
+- Output contract/parity — PASS; float32 `[1,3,128,128]`, finite, repeated-device maximum difference 0, eager/device max/mean differences `0.000331074` / `0.000057550`.
+- Warm inference — mean `0.121130` ms, median `0.105225` ms, P95 `0.172500` ms, min/max `0.099400` / `0.208600` ms; each sample has 5 warmups and 20 timed executions.
+- Process timing/memory — model file open `1.576` ms from process start, backend+method load `206.989` ms, method ready `208.565` ms, peak runner RSS `11,496` KiB.
+- Phase 1 environment — PASS, 30 passed plus 4 expected ExecuTorch-only skips.
+- Windows ExecuTorch environment — PASS, 34/34.
+- WSL QNN targeted tests — PASS, 10/10.
+- Generated reports/raw tensors/ETDump and all SDK/runtime/model/device-specific artifacts are ignored; tracked files contain no device serial or licensed binary.
+
+Limitations: inference timing is native `method->execute()` and excludes image conversion, UI/JNI, file I/O, ADB, sustained load, thermal, and power. Peak RSS is whole-runner resident memory, not isolated DSP memory. The retained XNNPACK app uses different runner layers, so no strict speedup ratio is claimed. Random weights do not establish SR quality.
+
+Phase 4 outcome: **complete**. The static model is fully delegated to one QNN backend subgraph and executes through HTP v73 on the physical Snapdragon 8 Gen 2 phone with verified output, timing, and process-memory evidence.
 
 ## Remaining Work
 
 - [x] P3.4: add RGB conversion/display and separated Android CPU timing.
 - [x] P4.2: install/verify the licensed QNN build environment and pass the strict gate.
 - [x] P4.3: lower the static model and verify QNN delegation/fallback.
-- [ ] P4.4: run on-device HTP inference and measure initialization/load/inference/memory (**next**).
-- [ ] Phase 5 quantization.
+- [x] P4.4: run on-device HTP inference and measure initialization/load/inference/memory.
+- [ ] Phase 5 quantization (**next**).
 - [ ] Phase 6 Vulkan pipeline.
 - [ ] Phase 7 temporal reconstruction.
 - [ ] Phase 8 final demo/end-to-end benchmark.

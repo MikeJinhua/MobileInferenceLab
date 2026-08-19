@@ -163,3 +163,12 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Serialize the generated `.pte` and machine-readable report only below ignored `results/`.
 - Verify eager/export shape, dtype, finiteness, determinism, and numerical parity on the host.
 - Do not claim Android runtime compatibility, HTP execution, NPU latency, or NPU numerical parity until P4.4 device evidence exists.
+
+### Phase 4 Task 4 — On-device QNN HTP Validation
+
+- Build the official ExecuTorch v1.3.1 Qualcomm Android runner against NDK r26c and QNN 2.37.0.250724 outside the repository.
+- Deploy the static P4.3 model and minimal matching HTP v73 runtime set to the connected SM8550 without committing licensed binaries or identifiers.
+- Require successful QNN HTP context restoration and execution with no portable fallback in the compiled model.
+- Verify output shape, dtype, finiteness, repeated-run determinism, and FP16 numerical agreement with the eager reference.
+- Report model/backend load, a warm inference distribution, and process peak RSS with scope and exclusions.
+- Keep the Phase 3 XNNPACK result as a qualified baseline; do not claim an apples-to-apples speedup when runner layers differ.

@@ -29,7 +29,15 @@ Measure a deterministic synthetic RGB source at 64x64, 320x180, and 960x540 on C
 
 1. **P4.2 environment:** verify WSL/Ubuntu, NDK, host tools, isolated Python dependencies, licensed QNN SDK layout/version, environment variables, connected SM8550, and a strict readiness report.
 2. **P4.3 lowering (complete):** the static 64x64 HTP FP16 artifact lowers to one `QnnBackend` delegate with no portable fallback; host eager/export contract and determinism pass. The target-specific offline context is not executable on the x86 host.
-3. **P4.4 device:** build a version-matched QNN Android runtime/app, prove HTP execution on SM8550, then measure initialization, load, inference, memory, and direct image-pipeline timing against the retained XNNPACK baseline.
+3. **P4.4 device (complete):** the version-matched official Android QNN runner restores and executes the offline HTP context on SM8550. Determinism/parity, process-to-method-ready timing, a 20-sample warm inference distribution, and peak runner RSS are recorded against the qualified retained XNNPACK baseline.
+
+### P4.4 runtime route
+
+Use the official ExecuTorch `v1.3.1` source and Qualcomm `qnn_executor_runner` first, built externally in WSL with NDK r26c and QNN 2.37.0.250724. Deploy the runner, `libqnn_executorch_backend.so`, the minimal matching QNN HTP/v73 runtime-library set, and the ignored P4.3 `.pte` to an app-private-independent test directory under `/data/local/tmp`. This runner gate gives direct backend logs and isolates HTP/runtime correctness from Java/AAR packaging. Do not replace or disturb the working Maven/XNNPACK Android app. After device execution/parity and measurements pass, integrate QNN into the UI only as a later explicit task if it adds learning value.
+
+The source checkout, build tree, Qualcomm libraries, runner binary, deployed files, outputs, and device identifiers stay outside Git. Repository scripts may describe and automate the build/deploy commands but must resolve external roots through environment variables or `$HOME` defaults.
+
+Phase 4 outcome: the static random-weight model is fully delegated at AOT and physically executes through QNN HTP v73 on Snapdragon 8 Gen 2. The native tensor runner is the reproducible backend gate; QNN UI/image-pipeline integration is not required to prove HTP execution and may be considered separately after Phase 5 precision comparisons.
 - **Phase 5:** comparable FP32/FP16/INT8 artifacts and results.
 - **Phase 6:** Vulkan image/frame textures, preprocess/composite, instrumentation before copy reduction.
 - **Phase 7:** create a separate temporal spec; add history, motion vectors, and depth incrementally.
