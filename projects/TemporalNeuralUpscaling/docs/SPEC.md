@@ -155,3 +155,11 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Configure reproducible `QNN_SDK_ROOT`, `ANDROID_NDK_ROOT`, host-library paths, and compiler/tool discovery without committing local absolute paths.
 - Pass dependency, backend-import, SDK-layout, device-SoC, and strict readiness gates before starting model lowering.
 - Do not create a QNN model, Android runtime, or NPU performance claim in this environment-only task.
+
+### Phase 4 Task 3 — Static HTP FP16 Lowering
+
+- Export only the deterministic static float32 NCHW `[1,3,64,64]` tensor core for SM8550 / HTP v73 FP16.
+- Require a QNN delegate and enumerate every portable fallback in the lowered edge graph.
+- Serialize the generated `.pte` and machine-readable report only below ignored `results/`.
+- Verify eager/export shape, dtype, finiteness, determinism, and numerical parity on the host.
+- Do not claim Android runtime compatibility, HTP execution, NPU latency, or NPU numerical parity until P4.4 device evidence exists.

@@ -383,21 +383,48 @@ Limitations: the environment is ready, but no QNN model has been lowered, no And
 
 ## P4.3 — Static HTP FP16 lowering and delegation analysis
 
+Status: **complete (2026-08-20)**
+
+- [x] Add a reproducible static `[1,3,64,64]` QNN HTP FP16 export command using the pinned WSL environment.
+- [x] Lower the current `SpatialSR2x.network` and serialize only an ignored generated artifact.
+- [x] Inspect and record QNN delegate count, backend identity, and every portable fallback operator.
+- [x] Verify output dtype/shape, finiteness, determinism, and eager/export parity where the available host runtime permits.
+- [x] Add automated tests for the export contract and delegation report.
+- [x] Update documentation and confirm proprietary/generated artifacts remain untracked.
+
+Changed files: `tools/export_spatial_sr_qnn.py`, `tools/run_qnn_export.sh`, `tools/qnn_env.sh`, `tools/check_qnn_environment.py`, `tests/test_spatial_sr_qnn.py`, `docs/SPATIAL_SR_QNN_EXPORT.md`, `README.md`, `docs/SPEC.md`, `docs/PLAN.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- `bash tools/run_qnn_export.sh` in WSL — PASS; generated an ignored 62,976-byte SM8550/HTP v73 FP16 `.pte`.
+- Partition report — PASS; one `QnnBackend` delegate, zero portable fallback operators, and explicit QNN support for both convolutions, ReLU, and PixelShuffle.
+- Tensor contract — PASS; float32 `[1,3,64,64]` input, `[1,3,128,128]` finite eager output, deterministic repeat difference 0, and eager/export maximum difference 0.
+- Strict QNN readiness — PASS, including actual host `libQnnHtp.so` dynamic loading with the official bootstrap `libc++` dependency.
+- Phase 1 environment — PASS, 28 passed plus 4 expected ExecuTorch-only skips.
+- Windows ExecuTorch environment — PASS, 32/32.
+- WSL QNN contract/readiness tests — PASS, 8/8.
+- Ignore/tracked-file audit and `git diff --check` — PASS; SDK libraries, bootstrap dependencies, generated `.pte`/JSON files, local paths, and device identifiers remain untracked.
+
+Limitations: the x86 host cannot execute the offline SM8550 HTP context. Device runtime loading, output parity, proof of HTP execution, initialization/load/inference timing, and memory measurements remain P4.4. The random-weight model is not an SR quality result.
+
+## P4.4 — On-device QNN HTP inference and measurements
+
 Status: **pending**
 
-- [ ] Add a reproducible static `[1,3,64,64]` QNN HTP FP16 export command using the pinned WSL environment.
-- [ ] Lower the current `SpatialSR2x.network` and serialize only an ignored generated artifact.
-- [ ] Inspect and record QNN delegate count, backend identity, and every portable fallback operator.
-- [ ] Verify output dtype/shape, finiteness, determinism, and eager/export parity where the available host runtime permits.
-- [ ] Add automated tests for the export contract and delegation report.
-- [ ] Update documentation and confirm proprietary/generated artifacts remain untracked.
+- [ ] Define and document the version-matched QNN Android runtime packaging/build route before implementation.
+- [ ] Build or package an ExecuTorch Android runtime that includes `QnnBackend` for arm64-v8a without committing Qualcomm libraries.
+- [ ] Package the ignored P4.3 model and required matching QNN/HTP v73 runtime libraries through a reproducible local preparation command.
+- [ ] Install and launch the app on the connected SM8550 phone and prove the QNN delegate initializes and executes on HTP.
+- [ ] Verify output shape, finiteness, repeat determinism, and numerical agreement with the deterministic eager reference.
+- [ ] Measure and report initialization, model load, warm inference distribution, direct image-pipeline timing, and process memory with stated methodology.
+- [ ] Retain the XNNPACK baseline, add automated/static regression tests, update documentation, and keep generated/proprietary/device-specific artifacts untracked.
 
 ## Remaining Work
 
 - [x] P3.4: add RGB conversion/display and separated Android CPU timing.
 - [x] P4.2: install/verify the licensed QNN build environment and pass the strict gate.
-- [ ] P4.3: lower the static model and verify QNN delegation/fallback (**next**).
-- [ ] P4.4: run on-device HTP inference and measure initialization/load/inference/memory.
+- [x] P4.3: lower the static model and verify QNN delegation/fallback.
+- [ ] P4.4: run on-device HTP inference and measure initialization/load/inference/memory (**next**).
 - [ ] Phase 5 quantization.
 - [ ] Phase 6 Vulkan pipeline.
 - [ ] Phase 7 temporal reconstruction.

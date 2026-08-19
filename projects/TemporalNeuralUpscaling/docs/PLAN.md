@@ -28,7 +28,7 @@ Measure a deterministic synthetic RGB source at 64x64, 320x180, and 960x540 on C
 ### Phase 4 execution gates
 
 1. **P4.2 environment:** verify WSL/Ubuntu, NDK, host tools, isolated Python dependencies, licensed QNN SDK layout/version, environment variables, connected SM8550, and a strict readiness report.
-2. **P4.3 lowering:** export only the static 64x64 HTP FP16 artifact, record QNN delegate count and every portable fallback, and verify output contract/parity where the available runtime permits.
+2. **P4.3 lowering (complete):** the static 64x64 HTP FP16 artifact lowers to one `QnnBackend` delegate with no portable fallback; host eager/export contract and determinism pass. The target-specific offline context is not executable on the x86 host.
 3. **P4.4 device:** build a version-matched QNN Android runtime/app, prove HTP execution on SM8550, then measure initialization, load, inference, memory, and direct image-pipeline timing against the retained XNNPACK baseline.
 - **Phase 5:** comparable FP32/FP16/INT8 artifacts and results.
 - **Phase 6:** Vulkan image/frame textures, preprocess/composite, instrumentation before copy reduction.

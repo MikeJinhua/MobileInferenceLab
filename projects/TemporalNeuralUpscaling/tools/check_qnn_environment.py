@@ -97,6 +97,8 @@ echo "tools_ready=$(for tool in python3 gcc g++ cmake ninja git curl unzip zip; 
 echo "venv_valid=$([[ -x "$venv/bin/python" ]] && echo true || echo false)"
 echo "venv_pip_check=$([[ -x "$venv/bin/python" ]] && "$venv/bin/python" -m pip check >/dev/null 2>&1 && echo true || echo false)"
 echo "venv_qnn_import=$([[ -x "$venv/bin/python" ]] && EXECUTORCH_BUILDING_WHEEL=1 "$venv/bin/python" -c 'import executorch.backends.qualcomm' >/dev/null 2>&1 && echo true || echo false)"
+libcxx=~/.cache/executorch/qnn/libcxx-14.0.0/clang+llvm-14.0.0-x86_64-linux-gnu-ubuntu-18.04/lib/x86_64-unknown-linux-gnu
+echo "qnn_host_load=$([[ -f "$libcxx/libc++.so.1" ]] && LD_LIBRARY_PATH="$qnn/lib/x86_64-linux-clang:$libcxx" "$venv/bin/python" -c 'import ctypes; ctypes.CDLL("libQnnHtp.so")' >/dev/null 2>&1 && echo true || echo false)"
 '''
     result = run(
         [wsl, "-d", distro, "--", "bash", "-s"],
@@ -175,6 +177,7 @@ def inspect_environment(
         "wsl_qnn_venv": wsl_qnn.get("venv_valid") == "true",
         "wsl_python_dependencies": wsl_qnn.get("venv_pip_check") == "true",
         "wsl_qualcomm_backend": wsl_qnn.get("venv_qnn_import") == "true",
+        "wsl_qnn_host_load": wsl_qnn.get("qnn_host_load") == "true",
         "executorch_qualcomm_backend": qualcomm_backend,
         "py_cpuinfo": importlib.util.find_spec("cpuinfo") is not None,
         "device_connected": device["abi"] is not None,
@@ -184,6 +187,7 @@ def inspect_environment(
     required = (
         "wsl_ubuntu_22_04", "wsl_host_tools", "android_ndk", "qnn_sdk_layout", "wsl_qnn_venv",
         "wsl_python_dependencies", "wsl_qualcomm_backend",
+        "wsl_qnn_host_load",
         "executorch_qualcomm_backend", "py_cpuinfo", "device_arm64", "device_soc_supported",
     )
     return {

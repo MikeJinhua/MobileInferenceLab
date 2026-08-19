@@ -18,9 +18,16 @@ if [[ ! -f "$ANDROID_NDK_ROOT/source.properties" ]]; then
 fi
 
 qnn_host_lib="$QNN_SDK_ROOT/lib/x86_64-linux-clang"
-case ":${LD_LIBRARY_PATH:-}:" in
-  *":$qnn_host_lib:"*) ;;
-  *) export LD_LIBRARY_PATH="$qnn_host_lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" ;;
-esac
+qnn_libcxx="${QNN_LIBCXX_ROOT:-$HOME/.cache/executorch/qnn/libcxx-14.0.0/clang+llvm-14.0.0-x86_64-linux-gnu-ubuntu-18.04/lib/x86_64-unknown-linux-gnu}"
+for qnn_library_dir in "$qnn_host_lib" "$qnn_libcxx"; do
+  if [[ ! -d "$qnn_library_dir" ]]; then
+    echo "Required QNN host library directory is missing: $qnn_library_dir" >&2
+    return 1 2>/dev/null || exit 1
+  fi
+  case ":${LD_LIBRARY_PATH:-}:" in
+    *":$qnn_library_dir:"*) ;;
+    *) export LD_LIBRARY_PATH="$qnn_library_dir${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" ;;
+  esac
+done
 
-unset qnn_host_lib
+unset qnn_host_lib qnn_libcxx qnn_library_dir
