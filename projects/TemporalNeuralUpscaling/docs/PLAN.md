@@ -24,6 +24,12 @@ Measure a deterministic synthetic RGB source at 64x64, 320x180, and 960x540 on C
 - **Phase 2 (complete):** the documented `ExecuTorch 1.3.1 + PyTorch 2.12.0 + Python 3.10` environment passes minimal, static portable, static XNNPACK, and bounded-dynamic portable/XNNPACK export and runtime parity. The dynamic contract fixes batch/RGB/float32 and bounds height/width to `16..128`; its XNNPACK graph has three delegates and two portable reshape fallbacks. See the Phase 2 reports for exact evidence.
 - **Phase 3 (complete):** the official Maven Central `executorch-android:1.3.1` AAR loads the reproducibly generated static XNNPACK model on an arm64 phone. The app implements deterministic RGB Bitmap-to-NCHW conversion, 2x inference, RGB output/display beside bilinear, and separated load/preprocess/inference/postprocess/direct-end-to-end timing. Direct C++ integration remains deferred until lower-level instrumentation or Vulkan interop requires it.
 - **Phase 4:** target SM8550/HTP v73 through WSL Ubuntu 22.04, Android NDK 26c, ExecuTorch 1.3.1, and matching QAIRT/QNN `2.37.0.250724`. Start with the static 64x64 graph and HTP FP16 so QNN integration is separated from Phase 5 quantization. Build/use a QNN-capable runtime matching the AOT SDK, inspect delegation and every fallback, verify device parity, then measure initialization/load/inference/memory. Keep the working XNNPACK environment and fallback baseline intact.
+
+### Phase 4 execution gates
+
+1. **P4.2 environment:** verify WSL/Ubuntu, NDK, host tools, isolated Python dependencies, licensed QNN SDK layout/version, environment variables, connected SM8550, and a strict readiness report.
+2. **P4.3 lowering:** export only the static 64x64 HTP FP16 artifact, record QNN delegate count and every portable fallback, and verify output contract/parity where the available runtime permits.
+3. **P4.4 device:** build a version-matched QNN Android runtime/app, prove HTP execution on SM8550, then measure initialization, load, inference, memory, and direct image-pipeline timing against the retained XNNPACK baseline.
 - **Phase 5:** comparable FP32/FP16/INT8 artifacts and results.
 - **Phase 6:** Vulkan image/frame textures, preprocess/composite, instrumentation before copy reduction.
 - **Phase 7:** create a separate temporal spec; add history, motion vectors, and depth incrementally.

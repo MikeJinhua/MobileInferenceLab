@@ -55,6 +55,16 @@ def parse_device_properties(output: str) -> Dict[str, Optional[str]]:
     return values
 
 
+def parse_os_release(output: str) -> Dict[str, str]:
+    values = {}
+    for line in output.splitlines():
+        if "=" not in line or line.startswith("#"):
+            continue
+        key, value = line.split("=", 1)
+        values[key] = value.strip().strip('"')
+    return values
+
+
 def inspect_environment(
     environment: Mapping[str, str] = os.environ,
     run: Callable[..., subprocess.CompletedProcess] = subprocess.run,
@@ -66,12 +76,20 @@ def inspect_environment(
 
     wsl = shutil.which("wsl.exe") or shutil.which("wsl")
     distros = []
+    wsl_os = {}
     if wsl:
         try:
             result = run([wsl, "-l", "-q"], capture_output=True, check=False, timeout=10)
             output = decode_process_output(result.stdout)
             if result.returncode == 0 and "--install" not in output:
                 distros = [line.strip() for line in output.splitlines() if line.strip()]
+            if distros:
+                result = run(
+                    [wsl, "-d", distros[0], "--", "cat", "/etc/os-release"],
+                    capture_output=True, check=False, timeout=10,
+                )
+                if result.returncode == 0:
+                    wsl_os = parse_os_release(decode_process_output(result.stdout))
         except (OSError, subprocess.SubprocessError):
             pass
 
@@ -100,7 +118,10 @@ def inspect_environment(
     except ModuleNotFoundError:
         qualcomm_backend = False
     checks = {
-        "wsl_ubuntu_22_04": any("Ubuntu-22.04" in name for name in distros),
+        "wsl_ubuntu_22_04": (
+            wsl_os.get("ID", "").lower() == "ubuntu"
+            and wsl_os.get("VERSION_ID") == "22.04"
+        ),
         "android_ndk": bool(ndk_versions),
         "qnn_sdk_root_set": qnn_root is not None,
         "qnn_sdk_layout": valid_qnn_sdk(qnn_root),
@@ -118,6 +139,7 @@ def inspect_environment(
         "ready_for_qnn_export_and_device_validation": all(checks[name] for name in required),
         "checks": checks,
         "wsl_distributions": distros,
+        "wsl_os_release": wsl_os,
         "ndk_versions": list(ndk_versions),
         "qnn_sdk_root": str(qnn_root) if qnn_root else None,
         "qnn_sdk_markers": list(REQUIRED_QNN_MARKERS),

@@ -146,3 +146,12 @@ Document prerequisites, commands, versions, devices, limitations, third-party so
 - Inspect the installed QNN backend for current-model operator evidence while treating real partitioning as the compatibility gate.
 - Keep proprietary SDK contents, generated models, runtime libraries, device serials, and local reports out of Git.
 - Do not export or claim QNN/NPU execution until the strict readiness gate passes.
+
+### Phase 4 Task 2 — Licensed QNN Build Environment
+
+- Use WSL 2 with Ubuntu 22.04 x86_64 and keep all SDKs and virtual environments outside the repository.
+- Install and verify Android NDK r26c, Python 3.10, PyTorch 2.12 CPU, ExecuTorch 1.3.1, and the required Qualcomm backend Python dependencies.
+- Install the user-approved Qualcomm QNN Community SDK `2.37.0.250724` from the official source and require its public layout/version markers.
+- Configure reproducible `QNN_SDK_ROOT`, `ANDROID_NDK_ROOT`, host-library paths, and compiler/tool discovery without committing local absolute paths.
+- Pass dependency, backend-import, SDK-layout, device-SoC, and strict readiness gates before starting model lowering.
+- Do not create a QNN model, Android runtime, or NPU performance claim in this environment-only task.

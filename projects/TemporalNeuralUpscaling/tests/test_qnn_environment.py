@@ -8,6 +8,7 @@ from tools.check_qnn_environment import (
     decode_process_output,
     find_ndk_versions,
     parse_device_properties,
+    parse_os_release,
     valid_qnn_sdk,
 )
 
@@ -37,6 +38,10 @@ class QnnEnvironmentTest(unittest.TestCase):
     def test_utf16_wsl_output_is_decoded(self) -> None:
         raw = "Ubuntu-22.04\r\n".encode("utf-16le")
         self.assertEqual(decode_process_output(raw), "Ubuntu-22.04")
+
+    def test_os_release_detects_ubuntu_version_independent_of_distro_name(self) -> None:
+        values = parse_os_release('ID=ubuntu\nVERSION_ID="22.04"\n')
+        self.assertEqual(values, {"ID": "ubuntu", "VERSION_ID": "22.04"})
 
 
 if __name__ == "__main__":

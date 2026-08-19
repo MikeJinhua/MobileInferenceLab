@@ -338,10 +338,38 @@ Verification:
 
 Limitations: no QNN SDK was installed, no model was lowered, no QNN-capable Android runtime was built, and no NPU execution/delegation/performance claim exists. Installed-source operator handlers are only preflight evidence.
 
+## P4.2 — Licensed QNN build environment
+
+Status: **in progress (started 2026-08-18)**
+
+- [x] Install and initialize WSL 2 with Ubuntu 22.04 x86_64.
+- [x] Install Ubuntu build essentials, Python 3.10, CMake, Ninja, Git, curl, unzip, and zip.
+- [x] Install and SHA-1 verify Android NDK r26c (`26.2.11394342`) outside the repository.
+- [x] Create isolated `$HOME/.venvs/tnu-qnn` and install PyTorch 2.12.0 CPU plus ExecuTorch 1.3.1 core.
+- [x] Install NumPy, Pillow, `py-cpuinfo`, and requests; verify the Qualcomm backend imports without auto-install side effects.
+- [x] Obtain explicit user approval for Qualcomm QNN Community SDK `2.37.0.250724`.
+- [ ] Finish official QNN host prerequisite and SDK download/extraction.
+- [ ] Verify `QNN_README.txt`, `sdk.yaml`, SDK version, host libraries, and Android target libraries.
+- [ ] Install all declared ExecuTorch Python dependencies and pass `pip check`.
+- [ ] Configure reproducible WSL `QNN_SDK_ROOT`, `ANDROID_NDK_ROOT`, and host-library environment.
+- [ ] Extend the readiness checker to evaluate the real WSL toolchain/SDK rather than Windows-only SDK paths.
+- [ ] Pass the strict QNN readiness gate with the connected SM8550 device.
+- [ ] Run both project test environments and update the readiness report with exact results.
+- [ ] Confirm that no SDK binary, generated model, cache, local path, or device serial is tracked by Git.
+
+Current evidence:
+
+- WSL reports Ubuntu 22.04.1 LTS, x86_64, and WSL version 2.
+- NDK r26c archive SHA-1 matched Android's published `7faebe2ebd3590518f326c82992603170f07c96e` and reports revision `26.2.11394342`.
+- Linux environment imports ExecuTorch 1.3.1 Qualcomm backend with PyTorch `2.12.0+cpu`.
+- Official QNN bootstrap is currently extracting the version-pinned host libc++ prerequisite; QNN SDK layout markers are not present yet.
+
+Limitations: P4.2 remains incomplete until the SDK and full dependency/layout/strict gates pass. No QNN model lowering, Android QNN runtime, HTP execution, or NPU performance result is claimed.
+
 ## Remaining Work
 
 - [x] P3.4: add RGB conversion/display and separated Android CPU timing.
-- [ ] P4.2: install/verify the licensed QNN build environment and pass the strict gate (**next**).
+- [ ] P4.2: install/verify the licensed QNN build environment and pass the strict gate (**in progress**).
 - [ ] P4.3: lower the static model and verify QNN delegation/fallback.
 - [ ] P4.4: run on-device HTP inference and measure initialization/load/inference/memory.
 - [ ] Phase 5 quantization.
