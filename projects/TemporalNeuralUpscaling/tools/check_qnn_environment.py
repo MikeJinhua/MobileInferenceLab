@@ -22,6 +22,13 @@ SUPPORTED_SOCS = {
     "SM8750": "v79",
 }
 REQUIRED_QNN_MARKERS = ("QNN_README.txt", "sdk.yaml")
+REQUIRED_QNN_LIBRARIES = (
+    "lib/x86_64-linux-clang/libQnnHtp.so",
+    "lib/x86_64-linux-clang/libQnnSystem.so",
+    "lib/aarch64-android/libQnnHtp.so",
+    "lib/aarch64-android/libQnnSystem.so",
+    "lib/hexagon-v73/unsigned/libQnnHtpV73Skel.so",
+)
 
 
 def decode_process_output(value: bytes) -> str:
@@ -65,6 +72,39 @@ def parse_os_release(output: str) -> Dict[str, str]:
     return values
 
 
+def parse_key_values(output: str) -> Dict[str, str]:
+    values = {}
+    for line in output.splitlines():
+        if "=" in line:
+            key, value = line.split("=", 1)
+            values[key.strip()] = value.strip()
+    return values
+
+
+def inspect_wsl_qnn(wsl: str, distro: str, run: Callable[..., subprocess.CompletedProcess]) -> Dict[str, str]:
+    script = r'''
+qnn=~/.cache/executorch/qnn/sdk-2.37.0.250724
+ndk=~/Android/Sdk/ndk/android-ndk-r26c
+venv=~/.venvs/tnu-qnn
+echo "qnn_root=$qnn"
+echo "ndk_root=$ndk"
+echo "venv_python=$venv/bin/python"
+echo "qnn_markers=$([[ -f "$qnn/QNN_README.txt" && -f "$qnn/sdk.yaml" ]] && echo true || echo false)"
+echo "qnn_libraries=$([[ -f "$qnn/lib/x86_64-linux-clang/libQnnHtp.so" && -f "$qnn/lib/x86_64-linux-clang/libQnnSystem.so" && -f "$qnn/lib/aarch64-android/libQnnHtp.so" && -f "$qnn/lib/aarch64-android/libQnnSystem.so" && -f "$qnn/lib/hexagon-v73/unsigned/libQnnHtpV73Skel.so" ]] && echo true || echo false)"
+echo "qnn_version=$(sed -n 's/^version:[[:space:]]*//p' "$qnn/sdk.yaml" 2>/dev/null | head -n1)"
+echo "ndk_valid=$([[ -f "$ndk/source.properties" ]] && echo true || echo false)"
+echo "tools_ready=$(for tool in python3 gcc g++ cmake ninja git curl unzip zip; do command -v "$tool" >/dev/null || exit 1; done && echo true || echo false)"
+echo "venv_valid=$([[ -x "$venv/bin/python" ]] && echo true || echo false)"
+echo "venv_pip_check=$([[ -x "$venv/bin/python" ]] && "$venv/bin/python" -m pip check >/dev/null 2>&1 && echo true || echo false)"
+echo "venv_qnn_import=$([[ -x "$venv/bin/python" ]] && EXECUTORCH_BUILDING_WHEEL=1 "$venv/bin/python" -c 'import executorch.backends.qualcomm' >/dev/null 2>&1 && echo true || echo false)"
+'''
+    result = run(
+        [wsl, "-d", distro, "--", "bash", "-s"],
+        input=script.encode("utf-8"), capture_output=True, check=False, timeout=30,
+    )
+    return parse_key_values(decode_process_output(result.stdout)) if result.returncode == 0 else {}
+
+
 def inspect_environment(
     environment: Mapping[str, str] = os.environ,
     run: Callable[..., subprocess.CompletedProcess] = subprocess.run,
@@ -77,6 +117,7 @@ def inspect_environment(
     wsl = shutil.which("wsl.exe") or shutil.which("wsl")
     distros = []
     wsl_os = {}
+    wsl_qnn = {}
     if wsl:
         try:
             result = run([wsl, "-l", "-q"], capture_output=True, check=False, timeout=10)
@@ -90,6 +131,7 @@ def inspect_environment(
                 )
                 if result.returncode == 0:
                     wsl_os = parse_os_release(decode_process_output(result.stdout))
+                wsl_qnn = inspect_wsl_qnn(wsl, distros[0], run)
         except (OSError, subprocess.SubprocessError):
             pass
 
@@ -122,9 +164,17 @@ def inspect_environment(
             wsl_os.get("ID", "").lower() == "ubuntu"
             and wsl_os.get("VERSION_ID") == "22.04"
         ),
-        "android_ndk": bool(ndk_versions),
-        "qnn_sdk_root_set": qnn_root is not None,
-        "qnn_sdk_layout": valid_qnn_sdk(qnn_root),
+        "wsl_host_tools": wsl_qnn.get("tools_ready") == "true",
+        "android_ndk": bool(ndk_versions) or wsl_qnn.get("ndk_valid") == "true",
+        "qnn_sdk_root_set": qnn_root is not None or bool(wsl_qnn.get("qnn_root")),
+        "qnn_sdk_layout": valid_qnn_sdk(qnn_root) or (
+            wsl_qnn.get("qnn_markers") == "true"
+            and wsl_qnn.get("qnn_libraries") == "true"
+            and wsl_qnn.get("qnn_version") == "2.37.0"
+        ),
+        "wsl_qnn_venv": wsl_qnn.get("venv_valid") == "true",
+        "wsl_python_dependencies": wsl_qnn.get("venv_pip_check") == "true",
+        "wsl_qualcomm_backend": wsl_qnn.get("venv_qnn_import") == "true",
         "executorch_qualcomm_backend": qualcomm_backend,
         "py_cpuinfo": importlib.util.find_spec("cpuinfo") is not None,
         "device_connected": device["abi"] is not None,
@@ -132,7 +182,8 @@ def inspect_environment(
         "device_soc_supported": soc in SUPPORTED_SOCS,
     }
     required = (
-        "wsl_ubuntu_22_04", "android_ndk", "qnn_sdk_layout",
+        "wsl_ubuntu_22_04", "wsl_host_tools", "android_ndk", "qnn_sdk_layout", "wsl_qnn_venv",
+        "wsl_python_dependencies", "wsl_qualcomm_backend",
         "executorch_qualcomm_backend", "py_cpuinfo", "device_arm64", "device_soc_supported",
     )
     return {
@@ -140,6 +191,7 @@ def inspect_environment(
         "checks": checks,
         "wsl_distributions": distros,
         "wsl_os_release": wsl_os,
+        "wsl_qnn": wsl_qnn,
         "ndk_versions": list(ndk_versions),
         "qnn_sdk_root": str(qnn_root) if qnn_root else None,
         "qnn_sdk_markers": list(REQUIRED_QNN_MARKERS),

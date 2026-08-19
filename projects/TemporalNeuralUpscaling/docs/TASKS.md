@@ -1,6 +1,6 @@
 # Task Ledger
 
-Updated: 2026-08-17
+Updated: 2026-08-20
 
 Active phase: **Phase 4 — Qualcomm QNN/NPU**
 
@@ -340,7 +340,7 @@ Limitations: no QNN SDK was installed, no model was lowered, no QNN-capable Andr
 
 ## P4.2 — Licensed QNN build environment
 
-Status: **in progress (started 2026-08-18)**
+Status: **complete (2026-08-20)**
 
 - [x] Install and initialize WSL 2 with Ubuntu 22.04 x86_64.
 - [x] Install Ubuntu build essentials, Python 3.10, CMake, Ninja, Git, curl, unzip, and zip.
@@ -348,29 +348,55 @@ Status: **in progress (started 2026-08-18)**
 - [x] Create isolated `$HOME/.venvs/tnu-qnn` and install PyTorch 2.12.0 CPU plus ExecuTorch 1.3.1 core.
 - [x] Install NumPy, Pillow, `py-cpuinfo`, and requests; verify the Qualcomm backend imports without auto-install side effects.
 - [x] Obtain explicit user approval for Qualcomm QNN Community SDK `2.37.0.250724`.
-- [ ] Finish official QNN host prerequisite and SDK download/extraction.
-- [ ] Verify `QNN_README.txt`, `sdk.yaml`, SDK version, host libraries, and Android target libraries.
-- [ ] Install all declared ExecuTorch Python dependencies and pass `pip check`.
-- [ ] Configure reproducible WSL `QNN_SDK_ROOT`, `ANDROID_NDK_ROOT`, and host-library environment.
-- [ ] Extend the readiness checker to evaluate the real WSL toolchain/SDK rather than Windows-only SDK paths.
-- [ ] Pass the strict QNN readiness gate with the connected SM8550 device.
-- [ ] Run both project test environments and update the readiness report with exact results.
-- [ ] Confirm that no SDK binary, generated model, cache, local path, or device serial is tracked by Git.
+- [x] Finish official QNN host prerequisite and SDK download/extraction.
+- [x] Verify `QNN_README.txt`, `sdk.yaml`, SDK version, host libraries, and Android target libraries.
+- [x] Install all declared ExecuTorch Python dependencies and pass `pip check`.
+- [x] Configure reproducible WSL `QNN_SDK_ROOT`, `ANDROID_NDK_ROOT`, and host-library environment.
+- [x] Extend the readiness checker to evaluate the real WSL toolchain/SDK rather than Windows-only SDK paths.
+- [x] Pass the strict QNN readiness gate with the connected SM8550 device.
+- [x] Run both project test environments and update the readiness report with exact results.
+- [x] Confirm that no SDK binary, generated model, cache, local path, or device serial is tracked by Git.
 
 Current evidence:
 
 - WSL reports Ubuntu 22.04.1 LTS, x86_64, and WSL version 2.
 - NDK r26c archive SHA-1 matched Android's published `7faebe2ebd3590518f326c82992603170f07c96e` and reports revision `26.2.11394342`.
 - Linux environment imports ExecuTorch 1.3.1 Qualcomm backend with PyTorch `2.12.0+cpu`.
-- Official QNN bootstrap is currently extracting the version-pinned host libc++ prerequisite; QNN SDK layout markers are not present yet.
+- Official QNN bootstrap completed and reported QNN SDK `2.37.0.250724` ready under the ignored per-user cache.
+- `sdk.yaml` reports QAIRT `2.37.0`, build ID `250724175447_124859`, Ubuntu 22.04, and Android NDK r26c.
+- SDK inspection found `QNN_README.txt`, `sdk.yaml`, x86_64 host `libQnnHtp.so`/`libQnnSystem.so`, aarch64 Android target libraries, and the HTP v73 skeleton library required by SM8550.
+- The complete ExecuTorch 1.3.1 dependency set is installed in the isolated WSL virtual environment; `python -m pip check` reports no broken requirements.
+- `tools/qnn_env.sh` derives SDK/NDK paths from `$HOME`, validates public markers, and adds only the QNN x86_64 host-library directory to `LD_LIBRARY_PATH`.
+- The extended strict checker validates the actual WSL host tools, NDK, QNN version/libraries, virtual environment, `pip check`, Qualcomm backend import, and connected SM8550; all required checks pass.
 
-Limitations: P4.2 remains incomplete until the SDK and full dependency/layout/strict gates pass. No QNN model lowering, Android QNN runtime, HTP execution, or NPU performance result is claimed.
+Changed files: `tools/qnn_env.sh`, `tools/check_qnn_environment.py`, `tests/test_qnn_environment.py`, `docs/QNN_READINESS.md`, `README.md`, and `docs/TASKS.md`.
+
+Verification:
+
+- WSL `python -m pip check` — PASS; no broken requirements.
+- `.venv-executorch\Scripts\python.exe -m tools.check_qnn_environment --strict --output results\p4_2\qnn_environment.json` — PASS; every required check true, connected target SM8550 / HTP v73.
+- `.venv\Scripts\python.exe -m unittest discover -s tests -v` — PASS, 26 passed plus 4 expected ExecuTorch-only skips.
+- `.venv-executorch\Scripts\python.exe -m unittest discover -s tests -v` — PASS, 30/30.
+- `git diff --check`, ignored-report check, and tracked-file scan — PASS; no SDK/runtime library, generated model/report, local properties, or device serial is tracked.
+
+Limitations: the environment is ready, but no QNN model has been lowered, no Android QNN runtime exists, and no HTP execution or NPU performance result is claimed.
+
+## P4.3 — Static HTP FP16 lowering and delegation analysis
+
+Status: **pending**
+
+- [ ] Add a reproducible static `[1,3,64,64]` QNN HTP FP16 export command using the pinned WSL environment.
+- [ ] Lower the current `SpatialSR2x.network` and serialize only an ignored generated artifact.
+- [ ] Inspect and record QNN delegate count, backend identity, and every portable fallback operator.
+- [ ] Verify output dtype/shape, finiteness, determinism, and eager/export parity where the available host runtime permits.
+- [ ] Add automated tests for the export contract and delegation report.
+- [ ] Update documentation and confirm proprietary/generated artifacts remain untracked.
 
 ## Remaining Work
 
 - [x] P3.4: add RGB conversion/display and separated Android CPU timing.
-- [ ] P4.2: install/verify the licensed QNN build environment and pass the strict gate (**in progress**).
-- [ ] P4.3: lower the static model and verify QNN delegation/fallback.
+- [x] P4.2: install/verify the licensed QNN build environment and pass the strict gate.
+- [ ] P4.3: lower the static model and verify QNN delegation/fallback (**next**).
 - [ ] P4.4: run on-device HTP inference and measure initialization/load/inference/memory.
 - [ ] Phase 5 quantization.
 - [ ] Phase 6 Vulkan pipeline.
